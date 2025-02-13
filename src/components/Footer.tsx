@@ -10,23 +10,23 @@ export const Footer = () => {
         <div className="flex flex-col items-center">
           <div className="flex space-x-6">
             <a
-              href="https://github.com/aivineet"
+              href="https://github.com/lhtvineettiwari"
               target="_blank"
               rel="noopener noreferrer"
               className="text-gray-400 hover:text-purple-600"
             >
               <Github className="h-6 w-6" />
             </a>
-            <a
+            {/* <a
               href="https://twitter.com/aivineet"
               target="_blank"
               rel="noopener noreferrer"
               className="text-gray-400 hover:text-purple-600"
             >
               <Twitter className="h-6 w-6" />
-            </a>
+            </a> */}
             <a
-              href="https://linkedin.com/in/aivineet"
+              href="https://www.linkedin.com/in/vineet-tiwari-ab1456163/"
               target="_blank"
               rel="noopener noreferrer"
               className="text-gray-400 hover:text-purple-600"
@@ -35,7 +35,14 @@ export const Footer = () => {
             </a>
           </div>
           <p className="mt-8 text-center text-base text-gray-500">
-            Powered by AIVineet
+          <a
+              href="https://aivineet.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-gray-400 hover:text-purple-600"
+            >
+             Powered by AIVineet
+            </a>
           </p>
           <p className="mt-2 text-center text-sm text-gray-400">
             © {currentYear} ThatNewAI. All rights reserved.

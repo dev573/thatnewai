@@ -36,20 +36,20 @@ export const Hero = () => {
 
   return (
     <div className="relative bg-white">
-      <div className="max-w-7xl mx-auto pt-20 pb-8 px-4 sm:pt-24 sm:pb-12 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto pt-24 pb-4 px-4 sm:pt-28 sm:pb-6 sm:px-6 lg:px-8">
         <div className="text-center">
           <span className="block text-sm font-semibold text-purple-600 tracking-wide uppercase animate-fade-in">
             Discover AI Tools
           </span>
-          <h1 className="mt-2 text-4xl font-bold text-gray-900 tracking-tight sm:text-5xl md:text-6xl animate-fade-in">
+          <h1 className="mt-1 text-4xl font-bold text-gray-900 tracking-tight sm:text-5xl md:text-6xl animate-fade-in">
             Your Guide to the Latest
             <span className="block text-purple-600">AI Technologies</span>
           </h1>
-          <p className="mt-3 max-w-md mx-auto text-base text-gray-500 sm:text-lg md:mt-5 md:text-xl md:max-w-3xl animate-fade-in">
+          <p className="mt-2 max-w-md mx-auto text-base text-gray-500 sm:text-lg md:mt-4 md:text-xl md:max-w-3xl animate-fade-in">
             Explore the newest AI tools and stay ahead with the latest innovations in artificial intelligence.
           </p>
 
-          <form onSubmit={handleSearch} className="mt-8 max-w-2xl mx-auto animate-fade-in relative">
+          <form onSubmit={handleSearch} className="mt-4 max-w-2xl mx-auto animate-fade-in relative">
             <div className="relative flex items-center">
               <Input
                 type="text"
