@@ -1,0 +1,136 @@
+{
+  "news": [
+    {
+      "id": "1",
+      "title": "OpenAI Announces GPT-5 Development",
+      "description": "OpenAI has begun development on GPT-5, promising significant improvements in reasoning and multimodal capabilities.",
+      "content": "OpenAI, the leading artificial intelligence research laboratory, has officially announced the commencement of GPT-5 development. This next iteration of their flagship language model is expected to bring revolutionary advances in reasoning capabilities and multimodal processing. The new model will be able to handle text, images, and potentially audio inputs in more sophisticated ways than its predecessors.",
+      "image": "/news/gpt5-announcement.jpg",
+      "category": "Latest Updates",
+      "date": "2025-02-13",
+      "author": "Sarah Chen",
+      "readTime": "5 min"
+    },
+    {
+      "id": "2",
+      "title": "Google's DeepMind Achieves Breakthrough in Protein Folding",
+      "description": "New AI model predicts protein structures with unprecedented accuracy, advancing drug discovery possibilities.",
+      "content": "Google's DeepMind has announced a major breakthrough in protein structure prediction, achieving accuracy levels that match experimental methods. This advancement could revolutionize drug discovery and our understanding of diseases at the molecular level. The new model can predict protein structures in minutes, compared to the months or years required for traditional experimental methods.",
+      "image": "/news/deepmind-protein.jpg",
+      "category": "Breakthroughs",
+      "date": "2025-02-12",
+      "author": "Michael Roberts",
+      "readTime": "4 min"
+    },
+    {
+      "id": "3",
+      "title": "AI Market Expected to Reach $1.5 Trillion by 2026",
+      "description": "New market research reveals explosive growth in AI industry, driven by enterprise adoption.",
+      "content": "A comprehensive market research report predicts that the global artificial intelligence market will reach $1.5 trillion by 2026, growing at a CAGR of 38%. The growth is primarily driven by increased enterprise adoption across various sectors including healthcare, finance, and manufacturing. Cloud-based AI solutions and edge computing are identified as key growth areas.",
+      "image": "/news/ai-market-growth.jpg",
+      "category": "Industry Trends",
+      "date": "2025-02-11",
+      "author": "Jessica Wong",
+      "readTime": "6 min"
+    },
+    {
+      "id": "4",
+      "title": "Microsoft Introduces AI-Powered Development Tools",
+      "description": "New suite of AI tools promises to revolutionize software development workflow.",
+      "content": "Microsoft has unveiled a new suite of AI-powered development tools that aim to streamline the software development process. The tools include advanced code completion, automated testing, and intelligent debugging features. Early testing shows up to 40% improvement in developer productivity.",
+      "image": "/news/microsoft-dev-tools.jpg",
+      "category": "Latest Updates",
+      "date": "2025-02-10",
+      "author": "David Kim",
+      "readTime": "4 min"
+    },
+    {
+      "id": "5",
+      "title": "AI Ethics Board Proposes New Guidelines",
+      "description": "International AI Ethics Board releases comprehensive guidelines for responsible AI development.",
+      "content": "The International AI Ethics Board has proposed new guidelines for responsible AI development and deployment. The guidelines address key areas including bias mitigation, transparency, and accountability. Major tech companies have already pledged to adopt these guidelines in their AI development processes.",
+      "image": "/news/ai-ethics.jpg",
+      "category": "Industry Trends",
+      "date": "2025-02-09",
+      "author": "Emma Thompson",
+      "readTime": "7 min"
+    },
+    {
+      "id": "6",
+      "title": "New AI Chip Sets Performance Records",
+      "description": "Revolutionary AI chip architecture achieves unprecedented processing speeds.",
+      "content": "A newly developed AI chip has set new performance records in standard benchmark tests. The chip uses a novel architecture that enables faster processing while consuming less power. This breakthrough could lead to more efficient AI applications in mobile devices and edge computing scenarios.",
+      "image": "/news/ai-chip.jpg",
+      "category": "Breakthroughs",
+      "date": "2025-02-08",
+      "author": "Alex Turner",
+      "readTime": "5 min"
+    },
+    {
+      "id": "7",
+      "title": "AI-Generated Content Guidelines Released",
+      "description": "Major platforms announce unified guidelines for AI-generated content labeling.",
+      "content": "Leading social media and content platforms have jointly announced new guidelines for labeling and managing AI-generated content. The guidelines aim to increase transparency and help users distinguish between human-created and AI-generated content. Implementation is expected to begin within the next three months.",
+      "image": "/news/ai-content.jpg",
+      "category": "Latest Updates",
+      "date": "2025-02-07",
+      "author": "Rachel Green",
+      "readTime": "4 min"
+    },
+    {
+      "id": "8",
+      "title": "Healthcare AI Shows Promise in Early Disease Detection",
+      "description": "New AI system demonstrates 95% accuracy in early disease detection.",
+      "content": "A breakthrough AI system has demonstrated remarkable accuracy in early disease detection across multiple conditions. The system, trained on millions of medical records, can identify potential health issues months before traditional diagnostic methods. Clinical trials are scheduled to begin in major hospitals.",
+      "image": "/news/healthcare-ai.jpg",
+      "category": "Breakthroughs",
+      "date": "2025-02-06",
+      "author": "Dr. James Wilson",
+      "readTime": "6 min"
+    },
+    {
+      "id": "9",
+      "title": "AI Investment Reaches New Heights",
+      "description": "Global AI investment surpasses previous records in Q1 2025.",
+      "content": "Investment in AI startups and technologies has reached unprecedented levels in the first quarter of 2025. Venture capital funding in AI companies has increased by 150% compared to the same period last year. Healthcare and enterprise software solutions lead the investment categories.",
+      "image": "/news/ai-investment.jpg",
+      "category": "Industry Trends",
+      "date": "2025-02-05",
+      "author": "Mark Anderson",
+      "readTime": "5 min"
+    },
+    {
+      "id": "10",
+      "title": "Autonomous Vehicles Achieve New Milestone",
+      "description": "Self-driving cars complete year-long trial with zero incidents.",
+      "content": "A major autonomous vehicle trial has concluded with remarkable results, reporting zero incidents over a full year of testing. The trial, conducted across various weather conditions and road types, marks a significant step toward widespread adoption of self-driving technology.",
+      "image": "/news/autonomous-vehicles.jpg",
+      "category": "Breakthroughs",
+      "date": "2025-02-04",
+      "author": "Tom Richards",
+      "readTime": "5 min"
+    },
+    {
+      "id": "11",
+      "title": "AI Education Initiative Launches Globally",
+      "description": "Major tech companies collaborate on global AI education program.",
+      "content": "Leading technology companies have joined forces to launch a global AI education initiative. The program aims to train 1 million students in AI and machine learning over the next three years. Free online courses and resources will be available in multiple languages.",
+      "image": "/news/ai-education.jpg",
+      "category": "Latest Updates",
+      "date": "2025-02-03",
+      "author": "Linda Martinez",
+      "readTime": "4 min"
+    },
+    {
+      "id": "12",
+      "title": "AI Language Models Show Human-Level Understanding",
+      "description": "Latest tests reveal AI language models matching human comprehension levels.",
+      "content": "Recent evaluations of advanced language models show them achieving human-level understanding in various comprehension tasks. The models demonstrated superior performance in reading comprehension, language translation, and context understanding. Researchers emphasize the importance of continued ethical considerations as these models advance.",
+      "image": "/news/language-models.jpg",
+      "category": "Breakthroughs",
+      "date": "2025-02-02",
+      "author": "Dr. Sarah Lee",
+      "readTime": "6 min"
+    }
+  ]
+}

@@ -5,6 +5,8 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
+import AINews from "./pages/AINews";
+import NewsDetail from "./pages/NewsDetail";
 import SearchResults from "./pages/SearchResults";
 import Categories from "./pages/Categories";
 import Category from "./pages/Category";
@@ -29,6 +31,8 @@ const App = () => (
           <Route path="/tool/:id" element={<ToolDetail />} />
           <Route path="/latest" element={<Latest />} />
           <Route path="/submit" element={<Submit />} />
+          <Route path="/ai-news" element={<AINews />} />
+          <Route path="/news/:id" element={<NewsDetail />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

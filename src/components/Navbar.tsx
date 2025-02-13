@@ -27,6 +27,9 @@ export const Navbar = () => {
             <a href="/latest" className="text-gray-700 hover:text-purple-600 transition-colors">
               Latest
             </a>
+            <a href="/ai-news" className="text-gray-700 hover:text-purple-600 transition-colors">
+              AI News
+            </a>
             <a href="/submit" className="text-gray-700 hover:text-purple-600 transition-colors">
               Submit
             </a>
@@ -63,6 +66,12 @@ export const Navbar = () => {
               className="block px-3 py-2 rounded-md text-gray-700 hover:text-purple-600 hover:bg-purple-50 transition-colors"
             >
               Latest
+            </a>
+            <a
+              href="/ai-news"
+              className="block px-3 py-2 rounded-md text-gray-700 hover:text-purple-600 hover:bg-purple-50 transition-colors"
+            >
+              AI News
             </a>
             <a
               href="/submit"
