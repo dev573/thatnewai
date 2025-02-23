@@ -17,7 +17,7 @@ import NotFound from "./pages/NotFound";
 import Backdoor from "./pages/Backdoor";
 import Dashboard from "./pages/admin/Dashboard";
 import PostForm from "./pages/admin/PostForm";
-
+import EditToolForm from "./pages/admin/EditToolForm";
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -40,6 +40,7 @@ const App = () => (
           <Route path="/admin/dashboard" element={<Dashboard />} />
           <Route path="/admin/posts/new" element={<PostForm />} />
           <Route path="/admin/posts/edit/:slug" element={<PostForm />} />
+          <Route path="/admin/tools/edit/:slug" element={<EditToolForm />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

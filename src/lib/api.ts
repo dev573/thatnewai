@@ -40,24 +40,39 @@ export const getCategories = async (): Promise<Category[]> => {
   }));
 };
 
-export const getTools = async (): Promise<Tool[]> => {
-  const response = await api.get('/tools');
+export interface PaginatedResponse<T> {
+  data: T[];
+  total: number;
+  page: number;
+  per_page: number;
+  total_pages: number;
+}
+
+export const getTools = async (page: number = 1, perPage: number = 10): Promise<PaginatedResponse<Tool>> => {
+  const response = await api.get(`/tools?page=${page}&per_page=${perPage}`);
   if (!response.data.items || !Array.isArray(response.data.items)) {
     throw new Error('Invalid data format received from server');
   }
-  return response.data.items.map((item: any) => ({
+  const tools = response.data.items.map((item: any) => ({
     id: item.id,
     name: item.name,
     slug: item.slug,
-    categories: [item.category], // Convert single category to array
+    categories: [item.category],
     short_description: item.description,
-    logo: item.resource_url || '/placeholder.svg', // Fallback to placeholder if no resource URL
-    rating: 0, // Default rating since it's not in the API response
-    pricing_type: item.type === 'free' ? 'Free' : item.type === 'freemium' ? 'Freemium' : 'Paid', // Map type to pricing_type with proper casing
+    logo: item.resource_url || '/placeholder.svg',
+    rating: 0,
+    pricing_type: item.type === 'free' ? 'Free' : item.type === 'freemium' ? 'Freemium' : 'Paid',
     website_url: item.resource_url,
-    created_at: new Date().toISOString(), // Default since not in API response
-    updated_at: new Date().toISOString() // Default since not in API response
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
   }));
+  return {
+    data: tools,
+    total: response.data.total || tools.length,
+    page: response.data.page || page,
+    per_page: response.data.per_page || perPage,
+    total_pages: response.data.total_pages || Math.ceil(tools.length / perPage)
+  };
 };
 
 export const getToolsByCategory = async (categorySlug: string): Promise<Tool[]> => {

@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
-import { Search, Plus, Edit2, Trash2, ArrowUpDown } from "lucide-react";
+import { Plus, Edit2, Trash2, ArrowUpDown } from "lucide-react";
+import { getTools } from "@/lib/api";
 
 interface Tool {
   id: string;
@@ -19,26 +19,21 @@ interface Tool {
   website_url?: string;
 }
 
-interface Post {
-  video_id: string;
-  title: string;
-  name: string;
-  category: string;
-  description: string;
-  tags: string[];
-  type: "free" | "paid" | "freemium" | "freemium";
-  thumbnails: Record<string, string>;
-  processed_at: { $date: string };
-  slug: string;
+interface PaginatedResponse<T> {
+  data: T[];
+  total: number;
+  page: number;
+  per_page: number;
+  total_pages: number;
 }
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [posts, setPosts] = useState<Post[]>([]);
   const [tools, setTools] = useState<Tool[]>([]);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [sortField, setSortField] = useState<keyof Post>("processed_at");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [perPage] = useState(10);
   const [toolSortField, setToolSortField] = useState<keyof Tool>("created_at");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
   const [isLoading, setIsLoading] = useState(true);
@@ -52,16 +47,9 @@ const AdminDashboard = () => {
 
     const fetchData = async () => {
       try {
-        const [postsResponse, toolsResponse] = await Promise.all([
-          fetch("/api/admin/inventions"),
-          fetch("/api/admin/tools")
-        ]);
-        const [postsData, toolsData] = await Promise.all([
-          postsResponse.json(),
-          toolsResponse.json()
-        ]);
-        setPosts(postsData);
-        setTools(toolsData);
+        const toolsResponse = await getTools(currentPage, perPage);
+        setTools(toolsResponse.data);
+        setTotalPages(toolsResponse.total_pages);
       } catch (error) {
         toast({
           title: "Error",
@@ -74,62 +62,35 @@ const AdminDashboard = () => {
     };
 
     fetchData();
-  }, [navigate, toast]);
+  }, [navigate, toast, currentPage, perPage]);
 
-  const handleSort = (field: keyof Post | keyof Tool, isToolSort: boolean = false) => {
-    if (isToolSort) {
-      if (field === toolSortField) {
-        setSortDirection(sortDirection === "asc" ? "desc" : "asc");
-      } else {
-        setToolSortField(field as keyof Tool);
-        setSortDirection("asc");
-      }
+  const handleSort = (field: keyof Tool) => {
+    if (field === toolSortField) {
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
     } else {
-      if (field === sortField) {
-        setSortDirection(sortDirection === "asc" ? "desc" : "asc");
-      } else {
-        setSortField(field as keyof Post);
-        setSortDirection("asc");
-      }
+      setToolSortField(field);
+      setSortDirection("asc");
     }
   };
 
   const handleDelete = async (slug: string) => {
-    if (!window.confirm("Are you sure you want to delete this post?")) return;
+    if (!window.confirm("Are you sure you want to delete this tool?")) return;
 
     try {
-      // TODO: Replace with actual API call
-      await fetch(`/api/admin/inventions/${slug}`, { method: "DELETE" });
-      setPosts(posts.filter(post => post.slug !== slug));
+      await fetch(`/api/admin/tools/${slug}`, { method: "DELETE" });
+      setTools(tools.filter(tool => tool.slug !== slug));
       toast({
         title: "Success",
-        description: "Post deleted successfully",
+        description: "Tool deleted successfully",
       });
     } catch (error) {
       toast({
         title: "Error",
-        description: "Failed to delete post",
+        description: "Failed to delete tool",
         variant: "destructive",
       });
     }
   };
-
-  const filteredPosts = posts.filter(post =>
-    post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    post.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    post.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))
-  );
-
-  const sortedPosts = [...filteredPosts].sort((a, b) => {
-    if (sortField === "processed_at") {
-      return sortDirection === "asc"
-        ? new Date(a.processed_at.$date).getTime() - new Date(b.processed_at.$date).getTime()
-        : new Date(b.processed_at.$date).getTime() - new Date(a.processed_at.$date).getTime();
-    }
-    return sortDirection === "asc"
-      ? String(a[sortField]).localeCompare(String(b[sortField]))
-      : String(b[sortField]).localeCompare(String(a[sortField]));
-  });
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -138,16 +99,15 @@ const AdminDashboard = () => {
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
           <Button
-            onClick={() => navigate("/admin/posts/new")}
+            onClick={() => navigate("/admin/tools/new")}
             className="bg-purple-600 hover:bg-purple-700"
           >
             <Plus className="w-4 h-4 mr-2" />
-            Add New Post
+            Add New Tool
           </Button>
         </div>
 
         <div className="space-y-8">
-        </div>
           <div className="bg-white rounded-lg shadow p-6">
             <h2 className="text-xl font-semibold mb-4">AI Tools</h2>
             <div className="overflow-x-auto">
@@ -159,7 +119,7 @@ const AdminDashboard = () => {
                     </th>
                     <th
                       className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-                      onClick={() => handleSort("name", true)}
+                      onClick={() => handleSort("name")}
                     >
                       <div className="flex items-center">
                         Name
@@ -171,7 +131,7 @@ const AdminDashboard = () => {
                     </th>
                     <th
                       className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-                      onClick={() => handleSort("pricing_type", true)}
+                      onClick={() => handleSort("pricing_type")}
                     >
                       <div className="flex items-center">
                         Pricing
@@ -180,7 +140,7 @@ const AdminDashboard = () => {
                     </th>
                     <th
                       className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-                      onClick={() => handleSort("created_at", true)}
+                      onClick={() => handleSort("created_at")}
                     >
                       <div className="flex items-center">
                         Created At
@@ -242,7 +202,54 @@ const AdminDashboard = () => {
                 </tbody>
               </table>
             </div>
+            <div className="mt-6 flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6">
+              <div className="flex flex-1 justify-between sm:hidden">
+                <Button
+                  onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                  disabled={currentPage === 1}
+                  variant="outline"
+                >
+                  Previous
+                </Button>
+                <Button
+                  onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                  disabled={currentPage === totalPages}
+                  variant="outline"
+                >
+                  Next
+                </Button>
+              </div>
+              <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+                <div>
+                  <p className="text-sm text-gray-700">
+                    Page <span className="font-medium">{currentPage}</span> of{' '}
+                    <span className="font-medium">{totalPages}</span>
+                  </p>
+                </div>
+                <div>
+                  <nav className="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
+                    <Button
+                      onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                      disabled={currentPage === 1}
+                      variant="outline"
+                      className="rounded-l-md"
+                    >
+                      Previous
+                    </Button>
+                    <Button
+                      onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                      disabled={currentPage === totalPages}
+                      variant="outline"
+                      className="rounded-r-md ml-2"
+                    >
+                      Next
+                    </Button>
+                  </nav>
+                </div>
+              </div>
+            </div>
           </div>
+        </div>
       </main>
     </div>
   );

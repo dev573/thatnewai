@@ -2,22 +2,23 @@
 import { useEffect, useState } from "react";
 import { ToolCard } from "@/components/ToolCard";
 import { Tool, getTools } from "@/lib/api";
+import { Button } from "./ui/button";
 
 export const FeaturedTools = () => {
   const [tools, setTools] = useState<Tool[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [perPage] = useState(9);
 
   useEffect(() => {
     const fetchTools = async () => {
       try {
-        const data = await getTools();
-        if (Array.isArray(data)) {
-          setTools(data);
-          setError(null);
-        } else {
-          setError('Invalid data format received from server');
-        }
+        const response = await getTools(currentPage, perPage);
+        setTools(response.data);
+        setTotalPages(response.total_pages);
+        setError(null);
       } catch (err) {
         setError('Failed to load tools. Please try again later.');
       } finally {
@@ -26,7 +27,7 @@ export const FeaturedTools = () => {
     };
 
     fetchTools();
-  }, []);
+  }, [currentPage, perPage]);
 
   if (loading) {
     return (
