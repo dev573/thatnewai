@@ -1,18 +1,73 @@
 
+import React, { useEffect, useState } from "react";
 import { Icon } from "lucide-react";
 import toolsData from "@/data/tools.json";
 import { Brain, Image, Mic, Video, Code, Rocket } from "lucide-react";
+import { Category, getCategories } from "@/lib/api";
 
 const iconMap: { [key: string]: any } = {
-  brain: Brain,
-  image: Image,
-  mic: Mic,
-  video: Video,
-  code: Code,
-  rocket: Rocket,
+  "Language Model": Brain,
+  "Image Generation": Image,
+  "Audio and Speech": Mic,
+  "Video Generation": Video,
+  "Development": Code,
+  "Productivity": Rocket,
+  "AI Tools": Brain,
+  "AI Automation": Rocket,
+  "AI Agent Framework": Code,
+  "AI Agent": Brain
 };
 
 export const CategoriesGrid = () => {
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const data = await getCategories();
+        if (Array.isArray(data)) {
+          setCategories(data);
+          setError(null);
+        } else {
+          setError('Invalid data format received from server');
+        }
+      } catch (err) {
+        setError('Failed to load categories. Please try again later.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
+  if (loading) {
+    return (
+      <section className="py-16 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <h2 className="text-3xl font-bold text-gray-900">Loading categories...</h2>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (error) {
+    return (
+      <section className="py-16 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <h2 className="text-3xl font-bold text-red-600">Error</h2>
+            <p className="mt-4 text-lg text-gray-600">{error}</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section className="py-16 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -24,8 +79,8 @@ export const CategoriesGrid = () => {
         </div>
 
         <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-          {toolsData.categories.map((category) => {
-            const IconComponent = iconMap[category.icon];
+          {categories.map((category) => {
+            const IconComponent = iconMap[category.name] || Rocket;
             return (
               <a
                 key={category.id}
@@ -34,7 +89,7 @@ export const CategoriesGrid = () => {
               >
                 <div className="flex items-center space-x-4">
                   <div className="p-3 rounded-lg bg-purple-50 group-hover:bg-purple-100 transition-colors">
-                    <IconComponent className="w-6 h-6 text-purple-600" />
+                    {IconComponent && <IconComponent className="w-6 h-6 text-purple-600" />}
                   </div>
                   <div>
                     <h3 className="text-lg font-semibold text-gray-900 group-hover:text-purple-600 transition-colors">
@@ -44,7 +99,7 @@ export const CategoriesGrid = () => {
                   </div>
                 </div>
               </a>
-            )
+            );
           })}
         </div>
       </div>

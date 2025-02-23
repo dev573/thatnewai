@@ -30,8 +30,8 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/search" element={<SearchResults />} />
           <Route path="/categories" element={<Categories />} />
-          <Route path="/category/:id" element={<Category />} />
-          <Route path="/tool/:id" element={<ToolDetail />} />
+          <Route path="/category/:slug" element={<Category />} />
+          <Route path="/tool/:slug" element={<ToolDetail />} />
           <Route path="/latest" element={<Latest />} />
           <Route path="/submit" element={<Submit />} />
           <Route path="/ai-news" element={<AINews />} />

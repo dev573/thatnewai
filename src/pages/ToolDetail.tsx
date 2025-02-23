@@ -1,19 +1,51 @@
 
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
 import { Star } from "lucide-react";
-import toolsData from "@/data/tools.json";
+import { Tool, getToolById } from "@/lib/api";
 
 const ToolDetail = () => {
   const { id } = useParams();
-  const tool = toolsData.featured.find(t => t.id === id);
+  const [tool, setTool] = useState<Tool | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  if (!tool) {
+  useEffect(() => {
+    const fetchTool = async () => {
+      if (!id) return;
+      try {
+        const data = await getToolById(id);
+        setTool(data);
+        setError(null);
+      } catch (err) {
+        setError('Failed to load tool details. Please try again later.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTool();
+  }, [id]);
+
+  if (loading) {
     return (
       <div className="min-h-screen bg-white">
         <Navbar />
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24">
-          <h1 className="text-3xl font-bold text-gray-900">Tool not found</h1>
+          <h1 className="text-3xl font-bold text-gray-900">Loading tool details...</h1>
+        </main>
+      </div>
+    );
+  }
+
+  if (error || !tool) {
+    return (
+      <div className="min-h-screen bg-white">
+        <Navbar />
+        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24">
+          <h1 className="text-3xl font-bold text-red-600">Error</h1>
+          <p className="mt-4 text-lg text-gray-600">{error || 'Tool not found'}</p>
         </main>
       </div>
     );

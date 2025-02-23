@@ -5,12 +5,16 @@ import toolsData from "@/data/tools.json";
 import { Footer } from "@/components/Footer";
 
 const iconMap: { [key: string]: any } = {
-  brain: Brain,
-  image: Image,
-  mic: Mic,
-  video: Video,
-  code: Code,
-  rocket: Rocket,
+  "Language Model": Brain,
+  "Image Generation": Image,
+  "Audio and Speech": Mic,
+  "Video Generation": Video,
+  "Development": Code,
+  "Productivity": Rocket,
+  "AI Tools": Brain,
+  "AI Automation": Rocket,
+  "AI Agent Framework": Code,
+  "AI Agent": Brain
 };
 
 const Categories = () => {
@@ -27,7 +31,7 @@ const Categories = () => {
 
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
           {toolsData.categories.map((category) => {
-            const IconComponent = iconMap[category.icon];
+            const IconComponent = iconMap[category.name] || Rocket;
             const toolsInCategory = toolsData.featured.filter(tool =>
               tool.categories.some(cat => cat.toLowerCase() === category.name.toLowerCase())
             );
@@ -35,7 +39,7 @@ const Categories = () => {
             return (
               <a
                 key={category.id}
-                href={`/category/${category.id}`}
+                href={`/category/${category.id.toLowerCase()}`}
                 className="group relative bg-white/50 backdrop-blur-lg rounded-xl shadow-sm hover:shadow-md transition-all duration-300 border border-gray-200 overflow-hidden p-6"
               >
                 <div className="flex items-center space-x-4">

@@ -5,25 +5,34 @@ import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { useNavigate } from "react-router-dom";
 import toolsData from "@/data/tools.json";
+import { Tool, searchTools } from "@/lib/api";
 
 export const Hero = () => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [suggestions, setSuggestions] = useState<any[]>([]);
+  const [suggestions, setSuggestions] = useState<Tool[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (searchQuery.trim().length > 0) {
-      const filtered = toolsData.featured.filter(tool =>
-        tool.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        tool.categories.some(cat => cat.toLowerCase().includes(searchQuery.toLowerCase()))
-      ).slice(0, 5);
-      setSuggestions(filtered);
-      setShowSuggestions(true);
-    } else {
-      setSuggestions([]);
-      setShowSuggestions(false);
-    }
+    const fetchSuggestions = async () => {
+      if (searchQuery.trim().length > 0) {
+        try {
+          const results = await searchTools(searchQuery);
+          setSuggestions(results.slice(0, 5));
+          setShowSuggestions(true);
+        } catch (err) {
+          console.error('Failed to fetch suggestions:', err);
+          setSuggestions([]);
+          setShowSuggestions(false);
+        }
+      } else {
+        setSuggestions([]);
+        setShowSuggestions(false);
+      }
+    };
+
+    const debounceTimer = setTimeout(fetchSuggestions, 300);
+    return () => clearTimeout(debounceTimer);
   }, [searchQuery]);
 
   const handleSearch = (e: React.FormEvent) => {
