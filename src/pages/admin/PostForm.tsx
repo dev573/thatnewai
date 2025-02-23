@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import MDEditor from '@uiw/react-md-editor';
+import { Upload } from 'lucide-react';
 
 interface PostFormData {
   title: string;
@@ -16,6 +18,7 @@ interface PostFormData {
   type: "free" | "paid" | "freemium" | "freemium";
   thumbnails: Record<string, string>;
   slug: string;
+  logo?: string;
 }
 
 const CATEGORIES = [
@@ -43,6 +46,8 @@ const PostForm = () => {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [tagsInput, setTagsInput] = useState("");
+  const [dragActive, setDragActive] = useState(false);
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [formData, setFormData] = useState<PostFormData>({
     title: "",
     name: "",
@@ -51,7 +56,8 @@ const PostForm = () => {
     tags: [],
     type: "free",
     thumbnails: {},
-    slug: ""
+    slug: "",
+    logo: ""
   });
 
   useEffect(() => {
@@ -126,17 +132,98 @@ const PostForm = () => {
     }
   };
 
+  const handleDrag = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.type === "dragenter" || e.type === "dragover") {
+      setDragActive(true);
+    } else if (e.type === "dragleave") {
+      setDragActive(false);
+    }
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      handleFile(e.dataTransfer.files[0]);
+    }
+  };
+
+  const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      handleFile(e.target.files[0]);
+    }
+  };
+
+  const handleFile = (file: File) => {
+    if (file.type.startsWith('image/')) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const result = e.target?.result as string;
+        setPreviewImage(result);
+        setFormData(prev => ({ ...prev, logo: result }));
+      };
+      reader.readAsDataURL(file);
+    } else {
+      toast({
+        title: "Error",
+        description: "Please upload an image file",
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
-      <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-16">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">
-            {slug ? "Edit" : "Add New"} AI Invention Post
-          </h1>
-        </div>
-
-        <form onSubmit={handleSubmit} className="space-y-6 bg-white rounded-lg shadow p-6">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-16">
+        <div className="grid grid-cols-2 gap-8">
+          <form onSubmit={handleSubmit} className="space-y-6 bg-white rounded-lg shadow p-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Tool Logo/Image
+              </label>
+              <div
+                className={`border-2 border-dashed rounded-lg p-6 text-center ${dragActive ? 'border-purple-600 bg-purple-50' : 'border-gray-300'}`}
+                onDragEnter={handleDrag}
+                onDragLeave={handleDrag}
+                onDragOver={handleDrag}
+                onDrop={handleDrop}
+              >
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileInput}
+                  className="hidden"
+                  id="file-upload"
+                />
+                <label
+                  htmlFor="file-upload"
+                  className="cursor-pointer flex flex-col items-center justify-center"
+                >
+                  {previewImage ? (
+                    <div className="relative w-24 h-24 mb-4">
+                      <img
+                        src={previewImage}
+                        alt="Preview"
+                        className="w-full h-full object-cover rounded-lg"
+                      />
+                    </div>
+                  ) : (
+                    <Upload className="w-12 h-12 text-gray-400 mb-4" />
+                  )}
+                  <p className="text-sm text-gray-600">
+                    Drag and drop an image here, or click to select
+                  </p>
+                  <p className="text-xs text-gray-500 mt-1">
+                    Recommended size: 100x100px
+                  </p>
+                </label>
+              </div>
+            </div>
           <div>
             <label htmlFor="title" className="block text-sm font-medium text-gray-700">
               Title
@@ -209,16 +296,16 @@ const PostForm = () => {
 
           <div>
             <label htmlFor="description" className="block text-sm font-medium text-gray-700">
-              Description
+              Description (Markdown)
             </label>
-            <Textarea
-              id="description"
-              value={formData.description}
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              required
-              className="mt-1"
-              rows={6}
-            />
+            <div data-color-mode="light">
+              <MDEditor
+                value={formData.description}
+                onChange={(value) => setFormData({ ...formData, description: value || "" })}
+                preview="edit"
+                height={400}
+              />
+            </div>
           </div>
 
           <div>
@@ -268,6 +355,14 @@ const PostForm = () => {
             </Button>
           </div>
         </form>
+
+          <div className="bg-white rounded-lg shadow p-6">
+            <h2 className="text-xl font-semibold mb-4">Preview</h2>
+            <div className="prose max-w-none" data-color-mode="light">
+              <MDEditor.Markdown source={formData.description} />
+            </div>
+          </div>
+        </div>
       </main>
     </div>
   );
