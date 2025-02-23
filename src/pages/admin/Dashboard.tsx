@@ -6,6 +6,19 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { Search, Plus, Edit2, Trash2, ArrowUpDown } from "lucide-react";
 
+interface Tool {
+  id: string;
+  name: string;
+  slug: string;
+  categories: string[];
+  short_description: string;
+  logo: string;
+  rating: number;
+  pricing_type: string;
+  created_at: string;
+  website_url?: string;
+}
+
 interface Post {
   video_id: string;
   title: string;
@@ -23,8 +36,10 @@ const AdminDashboard = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [posts, setPosts] = useState<Post[]>([]);
+  const [tools, setTools] = useState<Tool[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [sortField, setSortField] = useState<keyof Post>("processed_at");
+  const [toolSortField, setToolSortField] = useState<keyof Tool>("created_at");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
   const [isLoading, setIsLoading] = useState(true);
 
@@ -35,17 +50,22 @@ const AdminDashboard = () => {
       return;
     }
 
-    // TODO: Replace with actual API call
-    const fetchPosts = async () => {
+    const fetchData = async () => {
       try {
-        // Simulated API response
-        const response = await fetch("/api/admin/inventions");
-        const data = await response.json();
-        setPosts(data);
+        const [postsResponse, toolsResponse] = await Promise.all([
+          fetch("/api/admin/inventions"),
+          fetch("/api/admin/tools")
+        ]);
+        const [postsData, toolsData] = await Promise.all([
+          postsResponse.json(),
+          toolsResponse.json()
+        ]);
+        setPosts(postsData);
+        setTools(toolsData);
       } catch (error) {
         toast({
           title: "Error",
-          description: "Failed to fetch posts",
+          description: "Failed to fetch data",
           variant: "destructive",
         });
       } finally {
@@ -53,15 +73,24 @@ const AdminDashboard = () => {
       }
     };
 
-    fetchPosts();
+    fetchData();
   }, [navigate, toast]);
 
-  const handleSort = (field: keyof Post) => {
-    if (field === sortField) {
-      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+  const handleSort = (field: keyof Post | keyof Tool, isToolSort: boolean = false) => {
+    if (isToolSort) {
+      if (field === toolSortField) {
+        setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+      } else {
+        setToolSortField(field as keyof Tool);
+        setSortDirection("asc");
+      }
     } else {
-      setSortField(field);
-      setSortDirection("asc");
+      if (field === sortField) {
+        setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+      } else {
+        setSortField(field as keyof Post);
+        setSortDirection("asc");
+      }
     }
   };
 
@@ -107,7 +136,7 @@ const AdminDashboard = () => {
       <Navbar />
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-16">
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">AI Invention Posts</h1>
+          <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
           <Button
             onClick={() => navigate("/admin/posts/new")}
             className="bg-purple-600 hover:bg-purple-700"
@@ -117,96 +146,84 @@ const AdminDashboard = () => {
           </Button>
         </div>
 
-        <div className="bg-white rounded-lg shadow p-6">
-          <div className="flex gap-4 mb-6">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-              <Input
-                type="text"
-                placeholder="Search by title, category, or tags..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
-              />
-            </div>
-          </div>
-
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-                    onClick={() => handleSort("title")}
-                  >
-                    <div className="flex items-center">
-                      Title
-                      <ArrowUpDown className="ml-2 h-4 w-4" />
-                    </div>
-                  </th>
-                  <th
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-                    onClick={() => handleSort("category")}
-                  >
-                    <div className="flex items-center">
-                      Category
-                      <ArrowUpDown className="ml-2 h-4 w-4" />
-                    </div>
-                  </th>
-                  <th
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-                    onClick={() => handleSort("type")}
-                  >
-                    <div className="flex items-center">
-                      Type
-                      <ArrowUpDown className="ml-2 h-4 w-4" />
-                    </div>
-                  </th>
-                  <th
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-                    onClick={() => handleSort("processed_at")}
-                  >
-                    <div className="flex items-center">
-                      Date
-                      <ArrowUpDown className="ml-2 h-4 w-4" />
-                    </div>
-                  </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {isLoading ? (
+        <div className="space-y-8">
+        </div>
+          <div className="bg-white rounded-lg shadow p-6">
+            <h2 className="text-xl font-semibold mb-4">AI Tools</h2>
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-gray-50">
                   <tr>
-                    <td colSpan={5} className="px-6 py-4 text-center text-gray-500">
-                      Loading...
-                    </td>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Logo
+                    </th>
+                    <th
+                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                      onClick={() => handleSort("name", true)}
+                    >
+                      <div className="flex items-center">
+                        Name
+                        <ArrowUpDown className="ml-2 h-4 w-4" />
+                      </div>
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Categories
+                    </th>
+                    <th
+                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                      onClick={() => handleSort("pricing_type", true)}
+                    >
+                      <div className="flex items-center">
+                        Pricing
+                        <ArrowUpDown className="ml-2 h-4 w-4" />
+                      </div>
+                    </th>
+                    <th
+                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                      onClick={() => handleSort("created_at", true)}
+                    >
+                      <div className="flex items-center">
+                        Created At
+                        <ArrowUpDown className="ml-2 h-4 w-4" />
+                      </div>
+                    </th>
+                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Actions
+                    </th>
                   </tr>
-                ) : sortedPosts.length === 0 ? (
-                  <tr>
-                    <td colSpan={5} className="px-6 py-4 text-center text-gray-500">
-                      No posts found
-                    </td>
-                  </tr>
-                ) : (
-                  sortedPosts.map((post) => (
-                    <tr key={post.slug}>
-                      <td className="px-6 py-4 whitespace-nowrap">{post.title}</td>
-                      <td className="px-6 py-4 whitespace-nowrap">{post.category}</td>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {tools.map((tool) => (
+                    <tr key={tool.id}>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${post.type === "free" ? "bg-green-100 text-green-800" : "bg-yellow-100 text-yellow-800"}`}>
-                          {post.type}
+                        <img src={tool.logo} alt={tool.name} className="w-10 h-10 rounded-lg object-cover" />
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">{tool.name}</td>
+                      <td className="px-6 py-4">
+                        <div className="flex flex-wrap gap-2">
+                          {tool.categories.map((category) => (
+                            <span
+                              key={category}
+                              className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-50 text-purple-700"
+                            >
+                              {category}
+                            </span>
+                          ))}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${tool.pricing_type === "Free" ? "bg-green-100 text-green-800" : "bg-yellow-100 text-yellow-800"}`}>
+                          {tool.pricing_type}
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        {new Date(post.processed_at.$date).toLocaleDateString()}
+                        {new Date(tool.created_at).toLocaleDateString()}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => navigate(`/admin/posts/${post.slug}/edit`)}
+                          onClick={() => navigate(`/admin/tools/${tool.slug}/edit`)}
                           className="text-purple-600 hover:text-purple-900 mr-2"
                         >
                           <Edit2 className="w-4 h-4" />
@@ -214,19 +231,18 @@ const AdminDashboard = () => {
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => handleDelete(post.slug)}
+                          onClick={() => handleDelete(tool.slug)}
                           className="text-red-600 hover:text-red-900"
                         >
                           <Trash2 className="w-4 h-4" />
                         </Button>
                       </td>
                     </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
-        </div>
       </main>
     </div>
   );

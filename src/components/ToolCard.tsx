@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 
 interface ToolCardProps {
   id: string;
+  slug: string;
   name: string;
   categories: string[];
   short_description: string;
@@ -16,6 +17,7 @@ interface ToolCardProps {
 
 export const ToolCard = ({
   id,
+  slug,
   name,
   categories,
   short_description,
@@ -28,7 +30,7 @@ export const ToolCard = ({
 
   return (
     <div
-      onClick={() => navigate(`/tool/${id}`)}
+      onClick={() => navigate(`/tool/${slug}`)}
       className={cn(
         "group relative bg-white/50 backdrop-blur-lg rounded-xl shadow-sm hover:shadow-md transition-all duration-300 border border-gray-200 overflow-hidden cursor-pointer",
         className
@@ -47,11 +49,13 @@ export const ToolCard = ({
                 {name}
               </h3>
               <div className="flex items-center mt-1 space-x-2">
+                {/* Rating display temporarily commented out
                 <div className="flex items-center">
                   <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
                   <span className="ml-1 text-sm text-gray-600">{rating}</span>
                 </div>
                 <span className="text-gray-300">•</span>
+                */}
                 <span className="text-sm text-gray-600">{pricing_type}</span>
               </div>
             </div>

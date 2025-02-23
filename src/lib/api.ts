@@ -14,11 +14,14 @@ export interface Category {
 export interface Tool {
   id: string;
   name: string;
+  slug: string;
   categories: string[];
   short_description: string;
   logo: string;
   rating: number;
   pricing_type: string;
+  website_url: string;
+  created_at: string;
 }
 
 export const getCategories = async (): Promise<Category[]> => {
@@ -77,9 +80,26 @@ export const getToolsByCategory = async (categorySlug: string): Promise<Tool[]> 
   }));
 };
 
-export const getToolById = async (id: string): Promise<Tool> => {
-  const response = await api.get(`/tools/${id}`);
-  return response.data;
+export const getToolBySlug = async (slug: string): Promise<Tool> => {
+  const response = await api.get(`/tools/${slug}`);
+  const item = response.data;
+  return {
+    id: item.id,
+    name: item.name,
+    slug: item.slug,
+    categories: Array.isArray(item.categories) ? item.categories : 
+               Array.isArray(item.category) ? item.category :
+               item.category ? [item.category] : [],
+    short_description: item.description || item.short_description || '',
+    logo: item.resource_url || item.logo_url || item.logo || '/placeholder.svg',
+    rating: typeof item.rating === 'number' ? item.rating : 0,
+    pricing_type: item.pricing_type || 
+                 (item.type === 'free' ? 'Free' : 
+                  item.type === 'freemium' ? 'Freemium' : 
+                  item.type === 'paid' ? 'Paid' : 'Unknown'),
+    website_url: item.website_url || item.resource_url || '',
+    created_at: item.created_at ? new Date(item.created_at).toISOString() : new Date().toISOString()
+  };
 };
 
 export const searchTools = async (query: string): Promise<Tool[]> => {
