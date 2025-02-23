@@ -14,6 +14,7 @@ import ToolDetail from "./pages/ToolDetail";
 import Latest from "./pages/Latest";
 import Submit from "./pages/Submit";
 import NotFound from "./pages/NotFound";
+import Backdoor from "./pages/Backdoor";
 
 const queryClient = new QueryClient();
 
@@ -33,6 +34,7 @@ const App = () => (
           <Route path="/submit" element={<Submit />} />
           <Route path="/ai-news" element={<AINews />} />
           <Route path="/news/:id" element={<NewsDetail />} />
+          <Route path="/backdoor" element={<Backdoor />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
