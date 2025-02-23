@@ -15,6 +15,8 @@ import Latest from "./pages/Latest";
 import Submit from "./pages/Submit";
 import NotFound from "./pages/NotFound";
 import Backdoor from "./pages/Backdoor";
+import Dashboard from "./pages/admin/Dashboard";
+import PostForm from "./pages/admin/PostForm";
 
 const queryClient = new QueryClient();
 
@@ -35,6 +37,9 @@ const App = () => (
           <Route path="/ai-news" element={<AINews />} />
           <Route path="/news/:id" element={<NewsDetail />} />
           <Route path="/backdoor" element={<Backdoor />} />
+          <Route path="/admin/dashboard" element={<Dashboard />} />
+          <Route path="/admin/posts/new" element={<PostForm />} />
+          <Route path="/admin/posts/edit/:slug" element={<PostForm />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

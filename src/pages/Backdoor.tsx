@@ -1,17 +1,49 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Mail, Lock } from "lucide-react";
+import { useToast } from "@/components/ui/use-toast";
 
 const Backdoor = () => {
+  const navigate = useNavigate();
+  const { toast } = useToast();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle login logic here
-    console.log("Login attempt with:", { email, password });
+    setIsLoading(true);
+
+    try {
+      // TODO: Replace with actual API endpoint
+      if (email === "admin@thatnewai.com" && password === "admin123") {
+        // Simulating API call delay
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        // TODO: Store JWT token in localStorage
+        localStorage.setItem("adminToken", "dummy-token");
+        
+        toast({
+          title: "Login successful",
+          description: "Welcome to ThatNewAI Admin Panel",
+        });
+        
+        navigate("/admin/dashboard");
+      } else {
+        throw new Error("Invalid credentials");
+      }
+    } catch (error) {
+      toast({
+        title: "Login failed",
+        description: error instanceof Error ? error.message : "Please check your credentials",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -52,8 +84,12 @@ const Backdoor = () => {
                 />
               </div>
             </div>
-            <Button type="submit" className="w-full bg-purple-600 hover:bg-purple-700 transition-colors duration-200 py-6 text-lg font-medium shadow-lg hover:shadow-xl">
-              Sign In
+            <Button 
+              type="submit" 
+              className="w-full bg-purple-600 hover:bg-purple-700 transition-colors duration-200 py-6 text-lg font-medium shadow-lg hover:shadow-xl"
+              disabled={isLoading}
+            >
+              {isLoading ? "Signing in..." : "Sign In"}
             </Button>
           </form>
         </div>
