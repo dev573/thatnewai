@@ -21,22 +21,23 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
   url,
 }: SearchResultCardProps) => {
   return (
-    <div className="h-full group">
-      <Link to={url} className="block h-full">
-        <div className="flex flex-col h-full bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow p-6 border border-gray-200 hover:border-purple-200">
-          <div className="flex items-start justify-between mb-3">
-            <span className={`text-sm font-medium px-3 py-1 rounded-full ${type === 'tool' ? 'bg-purple-100 text-purple-800' : 'bg-green-100 text-green-800'}`}>
-              {type === 'tool' ? 'Tool' : 'News'}
+    <div className="group cursor-pointer">
+      <Link to={url.replace('/tools/', '/tool/')} className="block">
+        <div className="flex items-center space-x-4 p-4 hover:bg-purple-50 rounded-lg transition-colors">
+          <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${type === 'tool' ? 'bg-purple-100' : 'bg-green-100'}`}>
+            <span className={`text-sm font-medium ${type === 'tool' ? 'text-purple-800' : 'text-green-800'}`}>
+              {type === 'tool' ? 'T' : 'N'}
             </span>
-            <span className="text-sm text-gray-500">{formatDate(date)}</span>
           </div>
-          
-          <h3 className="text-xl font-semibold mb-3 text-gray-900 line-clamp-2 group-hover:text-purple-600 transition-colors">{name}</h3>
-          
-          <p className="text-gray-600 mb-4 line-clamp-3">{description}</p>
-          
-          <div className="flex items-center justify-between mt-auto">
-            <span className="text-sm font-medium text-gray-500 bg-gray-100 px-3 py-1 rounded-full hover:bg-purple-50 hover:text-purple-700 transition-colors">{category}</span>
+          <div className="flex-1 min-w-0">
+            <h3 className="text-base font-medium text-gray-900 truncate group-hover:text-purple-600 transition-colors">
+              {name}
+            </h3>
+            <p className="text-sm text-gray-500 truncate">{description}</p>
+          </div>
+          <div className="flex items-center space-x-2">
+            <span className="text-xs font-medium text-gray-500 bg-gray-100 px-2 py-1 rounded-full">{category}</span>
+            <span className="text-xs text-gray-400">{formatDate(date)}</span>
           </div>
         </div>
       </Link>

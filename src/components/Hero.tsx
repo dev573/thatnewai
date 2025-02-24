@@ -4,6 +4,7 @@ import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { useNavigate } from "react-router-dom";
 import { SearchResult, searchTools } from "@/lib/api";
+import SearchResultCard from "./SearchResultCard";
 
 export const Hero = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -62,54 +63,44 @@ export const Hero = () => {
             Explore the newest AI tools and stay ahead with the latest innovations in artificial intelligence.
           </p>
 
-          <form onSubmit={handleSearch} className="mt-4 max-w-2xl mx-auto animate-fade-in relative">
+          <form onSubmit={handleSearch} className="mt-8 max-w-4xl mx-auto relative animate-fade-in">
             <div className="relative flex items-center">
-              <Input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onKeyDown={handleKeyDown}
-                placeholder="Search AI tools..."
-                className="h-12 pl-12 pr-24 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-purple-600 focus:border-transparent"
-              />
-              <Search className="absolute left-4 text-gray-400" size={20} />
-              <Button 
-                type="submit"
-                className="absolute right-2 h-9 bg-purple-600 hover:bg-purple-700 text-white"
-              >
-                Search
-              </Button>
+            <Input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder="Search AI tools..."
+              className="h-14 pl-12 pr-32 w-full rounded-full border-2 border-gray-200 focus:ring-2 focus:ring-purple-600 focus:border-transparent text-lg"
+            />
+            <Search className="absolute left-4 text-gray-400" size={24} />
+            <Button 
+              type="submit"
+              className="absolute right-2 h-10 px-8 bg-purple-600 hover:bg-purple-700 text-white rounded-full text-lg font-medium"
+            >
+              Search
+            </Button>
+          </div>
+          
+          {showSuggestions && suggestions.length > 0 && (
+            <div className="absolute w-full mt-2 bg-white rounded-xl shadow-xl border border-gray-100 z-50 divide-y divide-gray-100">
+              {suggestions.map((result) => (
+                <SearchResultCard
+                  key={result.id}
+                  type={result.type}
+                  id={result.id}
+                  name={result.name}
+                  description={result.description}
+                  category={result.category}
+                  date={result.date}
+                  url={result.url}
+                />
+              ))}
             </div>
-            {showSuggestions && suggestions.length > 0 && (
-              <div className="absolute w-full mt-1 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
-                {suggestions.map((result) => (
-                  <div
-                    key={result.id}
-                    className="px-4 py-2 hover:bg-purple-50 cursor-pointer"
-                    onClick={() => {
-                      setShowSuggestions(false);
-                      navigate(result.url);
-                    }}
-                  >
-                    <div className="flex items-center space-x-3">
-                      <div className={`w-8 h-8 rounded flex items-center justify-center ${result.type === 'tool' ? 'bg-purple-100' : 'bg-green-100'}`}>
-                        <span className={`text-xs font-medium ${result.type === 'tool' ? 'text-purple-800' : 'text-green-800'}`}>
-                          {result.type === 'tool' ? 'T' : 'N'}
-                        </span>
-                      </div>
-                      <div>
-                        <h4 className="text-sm font-medium text-gray-900">{result.name}</h4>
-                        <p className="text-xs text-gray-500">{result.category}</p>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
+          )}
           </form>
         </div>
       </div>
-
       <div className="absolute inset-x-0 top-0 h-96 bg-gradient-to-b from-purple-50 to-white -z-10" />
     </div>
   );
