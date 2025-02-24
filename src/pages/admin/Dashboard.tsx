@@ -183,7 +183,7 @@ const AdminDashboard = () => {
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => navigate(`/admin/tools/${tool.slug}/edit`)}
+                          onClick={() => navigate(`/admin/tools/edit/${tool.slug}`)}
                           className="text-purple-600 hover:text-purple-900 mr-2"
                         >
                           <Edit2 className="w-4 h-4" />

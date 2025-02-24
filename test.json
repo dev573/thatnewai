@@ -1,0 +1,30 @@
+{
+    "items": [
+      {
+        "type": "tool",
+        "id": "67bb775e46d897e1fa829944",
+        "name": "Teuken 7B",
+        "slug": "teuken-7b",
+        "description": "Teuken 7B is a multilingual instruction-tuned language model",
+        "category": "Language Model",
+        "date": "2025-02-23T19:30:38.571000",
+        "url": "/tools/teuken-7b"
+      },
+      {
+        "type": "news",
+        "id": "67bb77c446d897e1fa82995c",
+        "name": "xAI Releases Grok-3, Claims Performance Improvements Over Previous Models",
+        "slug": "xai-releases-grok-3,-claims-performance-improvements-over-previous-models",
+        "description": "xAI has released Grok-3",
+        "category": "Latest Updates",
+        "date": "2024-06-14",
+        "url": "/news/xai-releases-grok-3,-claims-performance-improvements-over-previous-models"
+      }
+    ],
+    "total": 2,
+    "page": 1,
+    "per_page": 10,
+    "total_pages": 1,
+    "query": "chat",
+    "content_type": "all"
+  }

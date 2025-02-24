@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const api = axios.create({
+export const api = axios.create({
   baseURL: 'http://localhost:8000/api',
 });
 
@@ -32,11 +32,9 @@ export const getCategories = async (): Promise<Category[]> => {
   return response.data.items.map((item: any) => ({
     id: item.id,
     name: item.name,
-    slug: item.slug,
     icon: item.icon || 'default-icon',
     count: item.count || 0,
-    created_at: new Date().toISOString(), // Default since not in API response
-    updated_at: new Date().toISOString() // Default since not in API response
+    slug: item.slug || item.name.toLowerCase().replace(/\s+/g, '-')
   }));
 };
 
@@ -56,15 +54,19 @@ export const getTools = async (page: number = 1, perPage: number = 10): Promise<
   const tools = response.data.items.map((item: any) => ({
     id: item.id,
     name: item.name,
-    slug: item.slug,
-    categories: [item.category],
-    short_description: item.description,
-    logo: item.resource_url || '/placeholder.svg',
-    rating: 0,
-    pricing_type: item.type === 'free' ? 'Free' : item.type === 'freemium' ? 'Freemium' : 'Paid',
-    website_url: item.resource_url,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString()
+    slug: item.slug || item.name.toLowerCase().replace(/\s+/g, '-'),
+    categories: Array.isArray(item.categories) ? item.categories : 
+               Array.isArray(item.category) ? item.category :
+               item.category ? [item.category] : [],
+    short_description: item.description || item.short_description || '',
+    logo: item.logo || item.logo_url || item.resource_url || '/placeholder.svg',
+    rating: typeof item.rating === 'number' ? item.rating : 0,
+    pricing_type: item.pricing_type || 
+                 (item.type === 'free' ? 'Free' : 
+                  item.type === 'freemium' ? 'Freemium' : 
+                  item.type === 'paid' ? 'Paid' : 'Unknown'),
+    website_url: item.website_url || item.resource_url || '',
+    created_at: item.created_at ? new Date(item.created_at).toISOString() : new Date().toISOString()
   }));
   return {
     data: tools,
@@ -83,15 +85,19 @@ export const getToolsByCategory = async (categorySlug: string): Promise<Tool[]> 
   return response.data.items.map((item: any) => ({
     id: item.id,
     name: item.name,
-    slug: item.slug,
-    categories: [item.category], // Convert single category to array
-    short_description: item.description,
-    logo: item.resource_url || '/placeholder.svg',
-    rating: 0,
-    pricing_type: item.type === 'free' ? 'Free' : item.type === 'freemium' ? 'Freemium' : 'Paid', // Map type to pricing_type with proper casing
-    website_url: item.resource_url,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString()
+    slug: item.slug || item.name.toLowerCase().replace(/\s+/g, '-'),
+    categories: Array.isArray(item.categories) ? item.categories : 
+               Array.isArray(item.category) ? item.category :
+               item.category ? [item.category] : [],
+    short_description: item.description || item.short_description || '',
+    logo: item.logo || item.logo_url || item.resource_url || '/placeholder.svg',
+    rating: typeof item.rating === 'number' ? item.rating : 0,
+    pricing_type: item.pricing_type || 
+                 (item.type === 'free' ? 'Free' : 
+                  item.type === 'freemium' ? 'Freemium' : 
+                  item.type === 'paid' ? 'Paid' : 'Unknown'),
+    website_url: item.website_url || item.resource_url || '',
+    created_at: item.created_at ? new Date(item.created_at).toISOString() : new Date().toISOString()
   }));
 };
 
@@ -101,12 +107,12 @@ export const getToolBySlug = async (slug: string): Promise<Tool> => {
   return {
     id: item.id,
     name: item.name,
-    slug: item.slug,
+    slug: item.slug || item.name.toLowerCase().replace(/\s+/g, '-'),
     categories: Array.isArray(item.categories) ? item.categories : 
                Array.isArray(item.category) ? item.category :
                item.category ? [item.category] : [],
     short_description: item.description || item.short_description || '',
-    logo: item.resource_url || item.logo_url || item.logo || '/placeholder.svg',
+    logo: item.logo || item.logo_url || item.resource_url || '/placeholder.svg',
     rating: typeof item.rating === 'number' ? item.rating : 0,
     pricing_type: item.pricing_type || 
                  (item.type === 'free' ? 'Free' : 
@@ -117,7 +123,34 @@ export const getToolBySlug = async (slug: string): Promise<Tool> => {
   };
 };
 
-export const searchTools = async (query: string): Promise<Tool[]> => {
-  const response = await api.get(`/tools/search?q=${encodeURIComponent(query)}`);
+export interface SearchResult {
+  type: 'tool' | 'news';
+  id: string;
+  name: string;
+  slug: string;
+  description: string;
+  category: string;
+  date: string;
+  url: string;
+}
+
+export interface SearchResponse {
+  items: SearchResult[];
+  total: number;
+  page: number;
+  per_page: number;
+  total_pages: number;
+  query: string;
+  content_type: string;
+}
+
+export const searchTools = async (
+  query: string,
+  page: number = 1,
+  perPage: number = 10
+): Promise<SearchResponse> => {
+  const response = await api.get<SearchResponse>(
+    `/search?query=${encodeURIComponent(query)}&page=${page}&per_page=${perPage}&sort_by=relevance&sort_order=-1`
+  );
   return response.data;
 };

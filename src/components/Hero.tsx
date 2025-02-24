@@ -1,15 +1,13 @@
-
 import { useState, useEffect } from "react";
 import { Search } from "lucide-react";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { useNavigate } from "react-router-dom";
-import toolsData from "@/data/tools.json";
-import { Tool, searchTools } from "@/lib/api";
+import { SearchResult, searchTools } from "@/lib/api";
 
 export const Hero = () => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [suggestions, setSuggestions] = useState<Tool[]>([]);
+  const [suggestions, setSuggestions] = useState<SearchResult[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const navigate = useNavigate();
 
@@ -17,8 +15,8 @@ export const Hero = () => {
     const fetchSuggestions = async () => {
       if (searchQuery.trim().length > 0) {
         try {
-          const results = await searchTools(searchQuery);
-          setSuggestions(results.slice(0, 5));
+          const response = await searchTools(searchQuery, 1, 5);
+          setSuggestions(response.items);
           setShowSuggestions(true);
         } catch (err) {
           console.error('Failed to fetch suggestions:', err);
@@ -35,11 +33,17 @@ export const Hero = () => {
     return () => clearTimeout(debounceTimer);
   }, [searchQuery]);
 
-  const handleSearch = (e: React.FormEvent) => {
+  const handleSearch = (e: React.FormEvent | React.KeyboardEvent | React.MouseEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
       setShowSuggestions(false);
-      navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
+      navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handleSearch(e);
     }
   };
 
@@ -64,33 +68,38 @@ export const Hero = () => {
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={handleKeyDown}
                 placeholder="Search AI tools..."
                 className="h-12 pl-12 pr-24 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-purple-600 focus:border-transparent"
               />
               <Search className="absolute left-4 text-gray-400" size={20} />
               <Button 
                 type="submit"
-                className="absolute right-2 h-9 bg-purple-600 hover:bg-purple-700"
+                className="absolute right-2 h-9 bg-purple-600 hover:bg-purple-700 text-white"
               >
                 Search
               </Button>
             </div>
             {showSuggestions && suggestions.length > 0 && (
               <div className="absolute w-full mt-1 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
-                {suggestions.map((tool) => (
+                {suggestions.map((result) => (
                   <div
-                    key={tool.id}
+                    key={result.id}
                     className="px-4 py-2 hover:bg-purple-50 cursor-pointer"
                     onClick={() => {
                       setShowSuggestions(false);
-                      navigate(`/tool/${tool.id}`);
+                      navigate(result.url);
                     }}
                   >
                     <div className="flex items-center space-x-3">
-                      <img src={tool.logo} alt={tool.name} className="w-8 h-8 rounded" />
+                      <div className={`w-8 h-8 rounded flex items-center justify-center ${result.type === 'tool' ? 'bg-purple-100' : 'bg-green-100'}`}>
+                        <span className={`text-xs font-medium ${result.type === 'tool' ? 'text-purple-800' : 'text-green-800'}`}>
+                          {result.type === 'tool' ? 'T' : 'N'}
+                        </span>
+                      </div>
                       <div>
-                        <h4 className="text-sm font-medium text-gray-900">{tool.name}</h4>
-                        <p className="text-xs text-gray-500">{tool.categories.join(", ")}</p>
+                        <h4 className="text-sm font-medium text-gray-900">{result.name}</h4>
+                        <p className="text-xs text-gray-500">{result.category}</p>
                       </div>
                     </div>
                   </div>

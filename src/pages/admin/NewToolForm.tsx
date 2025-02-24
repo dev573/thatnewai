@@ -1,8 +1,6 @@
 import { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
-import { getToolBySlug } from "@/lib/api";
-import { api } from "@/lib/api";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
@@ -12,7 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
 import MDEditor from '@uiw/react-md-editor';
 
-interface ToolFormData {
+interface NewToolFormData {
   name: string;
   category: string;
   description: string;
@@ -32,13 +30,21 @@ const CATEGORIES = [
   "Other"
 ];
 
-export default function EditToolForm() {
+const generateSlug = (title: string): string => {
+  return title
+    .toLowerCase()
+    .replace(/[^\w\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
+    .trim();
+};
+
+export default function NewToolForm() {
   const navigate = useNavigate();
-  const { slug } = useParams();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [tagsInput, setTagsInput] = useState("");
-  const [formData, setFormData] = useState<ToolFormData>({
+  const [formData, setFormData] = useState<NewToolFormData>({
     name: "",
     category: "",
     description: "",
@@ -54,51 +60,39 @@ export default function EditToolForm() {
       navigate("/backdoor");
       return;
     }
-
-    // Fetch existing tool data
-    const fetchTool = async () => {
-      try {
-        const tool = await getToolBySlug(slug || '');
-        setFormData({
-          name: tool.name,
-          category: tool.categories[0] || '',
-          description: tool.short_description,
-          tags: tool.categories,
-          type: tool.pricing_type.toLowerCase() as "free" | "paid" | "freemium",
-          resource_url: tool.website_url,
-          featured: false
-        });
-        setTagsInput(tool.categories.join(", "));
-      } catch (error) {
-        toast({
-          title: "Error",
-          description: "Failed to fetch tool data",
-          variant: "destructive",
-        });
-        navigate("/admin/dashboard");
-      }
-    };
-
-    fetchTool();
-  }, [navigate, slug, toast]);
+  }, [navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
     try {
-      const response = await api.patch(`/tools/${slug}`, formData);
+      const response = await fetch(`/api/tools`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...formData,
+          slug: generateSlug(formData.name)
+        }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to create tool');
+      }
 
       toast({
         title: "Success",
-        description: "Tool updated successfully",
+        description: "Tool created successfully",
       });
 
       navigate("/admin/dashboard");
     } catch (error) {
       toast({
         title: "Error",
-        description: error instanceof Error ? error.message : "Failed to update tool",
+        description: error instanceof Error ? error.message : "Failed to create tool",
         variant: "destructive",
       });
     } finally {
@@ -110,12 +104,12 @@ export default function EditToolForm() {
     <div className="min-h-screen bg-white">
       <Navbar />
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-12">
-        <div className="text-center mb-6">
-          <h1 className="text-3xl font-bold text-gray-900 mt-10">
-            Edit Tool
+        <div className="text-center mb-6 mt-10">
+          <h1 className="text-3xl font-bold text-gray-900">
+            Add New Tool
           </h1>
           <p className="mt-2 text-base text-gray-500">
-            Update tool information and details
+            Share a new AI tool with the community
           </p>
         </div>
 
@@ -273,7 +267,7 @@ export default function EditToolForm() {
                   className="w-full bg-purple-600 hover:bg-purple-700 h-10"
                   disabled={isLoading}
                 >
-                  {isLoading ? "Updating..." : "Update Tool"}
+                  {isLoading ? "Creating..." : "Create Tool"}
                 </Button>
               </div>
             </form>
