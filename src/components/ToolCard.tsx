@@ -2,6 +2,7 @@
 import { Star } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
+import { getCategoryIcon } from "@/lib/categoryIcons";
 
 interface ToolCardProps {
   id: string;
@@ -65,14 +66,18 @@ export const ToolCard = ({
         <p className="mt-4 text-sm text-gray-600 line-clamp-2">{short_description}</p>
 
         <div className="mt-4 flex flex-wrap gap-2">
-          {categories.map((category) => (
-            <span
-              key={category}
-              className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-50 text-purple-700"
-            >
-              {category}
-            </span>
-          ))}
+          {categories.map((category) => {
+            const IconComponent = getCategoryIcon(category);
+            return (
+              <span
+                key={category}
+                className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-50 text-purple-700"
+              >
+                <IconComponent className="w-3 h-3 mr-1" />
+                {category}
+              </span>
+            );
+          })}
         </div>
       </div>
     </div>

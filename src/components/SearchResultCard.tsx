@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { formatDate } from '@/lib/utils';
+import { getCategoryIcon } from '@/lib/categoryIcons';
 
 interface SearchResultCardProps {
   type: 'tool' | 'news';
@@ -36,7 +37,14 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
             <p className="text-sm text-gray-500 truncate">{description}</p>
           </div>
           <div className="flex items-center space-x-2">
-            <span className="text-xs font-medium text-gray-500 bg-gray-100 px-2 py-1 rounded-full">{category}</span>
+            <span className="inline-flex items-center text-xs font-medium text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
+              {type === 'tool' && (
+                <span className="mr-1">
+                  {React.createElement(getCategoryIcon(category), { className: 'w-3 h-3' })}
+                </span>
+              )}
+              {category}
+            </span>
             <span className="text-xs text-gray-400">{formatDate(date)}</span>
           </div>
         </div>

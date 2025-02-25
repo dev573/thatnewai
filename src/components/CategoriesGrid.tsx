@@ -1,22 +1,7 @@
 
 import React, { useEffect, useState } from "react";
-import { Icon } from "lucide-react";
-import toolsData from "@/data/tools.json";
-import { Brain, Image, Mic, Video, Code, Rocket } from "lucide-react";
 import { Category, getCategories } from "@/lib/api";
-
-const iconMap: { [key: string]: any } = {
-  "Language Model": Brain,
-  "Image Generation": Image,
-  "Audio and Speech": Mic,
-  "Video Generation": Video,
-  "Development": Code,
-  "Productivity": Rocket,
-  "AI Tools": Brain,
-  "AI Automation": Rocket,
-  "AI Agent Framework": Code,
-  "AI Agent": Brain
-};
+import { getCategoryIcon } from "@/lib/categoryIcons";
 
 export const CategoriesGrid = () => {
   const [categories, setCategories] = useState<Category[]>([]);
@@ -80,7 +65,7 @@ export const CategoriesGrid = () => {
 
         <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
           {categories.map((category) => {
-            const IconComponent = iconMap[category.name] || Rocket;
+            const IconComponent = getCategoryIcon(category.name);
             return (
               <a
                 key={category.id}

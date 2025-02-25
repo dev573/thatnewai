@@ -6,6 +6,7 @@ import { Star, ExternalLink, Calendar } from "lucide-react";
 import { Tool, getToolBySlug } from "@/lib/api";
 import MDEditor from '@uiw/react-md-editor';
 import { Button } from "@/components/ui/button";
+import { getCategoryIcon } from "@/lib/categoryIcons";
 
 const ToolDetail = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -96,14 +97,18 @@ const ToolDetail = () => {
                   )}
                 </div>
                 <div className="mt-4 flex flex-wrap gap-2">
-                  {tool.categories.map((category) => (
-                    <span
-                      key={category}
-                      className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-purple-50 text-purple-700"
-                    >
-                      {category}
-                    </span>
-                  ))}
+                  {tool.categories.map((category) => {
+                    const IconComponent = getCategoryIcon(category);
+                    return (
+                      <span
+                        key={category}
+                        className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-purple-50 text-purple-700"
+                      >
+                        <IconComponent className="w-4 h-4 mr-1.5" />
+                        {category}
+                      </span>
+                    );
+                  })}
                 </div>
               </div>
             </div>
