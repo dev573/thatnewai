@@ -1,8 +1,8 @@
-
+import { useState, useEffect } from "react";
 import { Navbar } from "@/components/Navbar";
 import { Brain, Image, Mic, Video, Code, Rocket } from "lucide-react";
-import toolsData from "@/data/tools.json";
 import { Footer } from "@/components/Footer";
+import { Category, getCategories } from "@/lib/api";
 
 const iconMap: { [key: string]: any } = {
   "Language Model": Brain,
@@ -18,6 +18,32 @@ const iconMap: { [key: string]: any } = {
 };
 
 const Categories = () => {
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        setLoading(true);
+        const data = await getCategories();
+        if (Array.isArray(data)) {
+          setCategories(data);
+          setError(null);
+        } else {
+          setError('Invalid data format received from server');
+        }
+      } catch (err) {
+        setError('Failed to load categories. Please try again later.');
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
   return (
     <div className="min-h-screen bg-white">
       <Navbar />
@@ -29,50 +55,41 @@ const Categories = () => {
           </p>
         </div>
 
-        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-          {toolsData.categories.map((category) => {
-            const IconComponent = iconMap[category.name] || Rocket;
-            const toolsInCategory = toolsData.featured.filter(tool =>
-              tool.categories.some(cat => cat.toLowerCase() === category.name.toLowerCase())
-            );
-            
-            return (
-              <a
-                key={category.id}
-                href={`/category/${category.id.toLowerCase()}`}
-                className="group relative bg-white/50 backdrop-blur-lg rounded-xl shadow-sm hover:shadow-md transition-all duration-300 border border-gray-200 overflow-hidden p-6"
-              >
-                <div className="flex items-center space-x-4">
-                  <div className="p-3 rounded-lg bg-purple-50 group-hover:bg-purple-100 transition-colors">
-                    <IconComponent className="w-6 h-6 text-purple-600" />
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-900 group-hover:text-purple-600 transition-colors">
-                      {category.name}
-                    </h3>
-                    <p className="mt-1 text-sm text-gray-600">{category.count} tools</p>
-                  </div>
-                </div>
-
-                {toolsInCategory.length > 0 && (
-                  <div className="mt-4 border-t pt-4">
-                    <p className="text-sm font-medium text-gray-500">Popular tools:</p>
-                    <div className="mt-2 flex flex-wrap gap-2">
-                      {toolsInCategory.slice(0, 2).map((tool) => (
-                        <span
-                          key={tool.id}
-                          className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-50 text-purple-700"
-                        >
-                          {tool.name}
-                        </span>
-                      ))}
+        {loading ? (
+          <div className="text-center py-10">
+            <p className="text-lg">Loading categories...</p>
+          </div>
+        ) : error ? (
+          <div className="text-center py-10 text-red-500">
+            <p className="text-lg">{error}</p>
+          </div>
+        ) : (
+          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+            {categories.map((category) => {
+              const IconComponent = iconMap[category.name] || Rocket;
+              
+              return (
+                <a
+                  key={category.id}
+                  href={`/category/${category.slug || category.id}`}
+                  className="group relative bg-white/50 backdrop-blur-lg rounded-xl shadow-sm hover:shadow-md transition-all duration-300 border border-gray-200 overflow-hidden p-6"
+                >
+                  <div className="flex items-center space-x-4">
+                    <div className="p-3 rounded-lg bg-purple-50 group-hover:bg-purple-100 transition-colors">
+                      <IconComponent className="w-6 h-6 text-purple-600" />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-semibold text-gray-900 group-hover:text-purple-600 transition-colors">
+                        {category.name}
+                      </h3>
+                      <p className="mt-1 text-sm text-gray-600">{category.count} tools</p>
                     </div>
                   </div>
-                )}
-              </a>
-            );
-          })}
-        </div>
+                </a>
+              );
+            })}
+          </div>
+        )}
       </main>
       <Footer />
     </div>
