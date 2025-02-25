@@ -84,7 +84,7 @@ export const CategoriesGrid = () => {
             return (
               <a
                 key={category.id}
-                href={`/category/${category.id}`}
+                href={`/category/${category.slug}`}
                 className="group relative bg-white/50 backdrop-blur-lg rounded-xl shadow-sm hover:shadow-md transition-all duration-300 border border-gray-200 overflow-hidden p-6"
               >
                 <div className="flex items-center space-x-4">

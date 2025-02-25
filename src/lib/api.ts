@@ -9,6 +9,7 @@ export interface Category {
   name: string;
   icon: string;
   count: number;
+  slug: string;
 }
 
 export interface Tool {
@@ -26,11 +27,18 @@ export interface Tool {
 
 export const getCategories = async (): Promise<Category[]> => {
   const response = await api.get('/categories');
-  if (!response.data.items || !Array.isArray(response.data.items)) {
+  // Check if response.data is an array directly or has items property
+  const items = Array.isArray(response.data) ? response.data : 
+                (response.data.items && Array.isArray(response.data.items)) ? response.data.items : 
+                [];
+  
+  if (items.length === 0) {
+    console.error('No categories found in response:', response.data);
     throw new Error('Invalid data format received from server');
   }
-  return response.data.items.map((item: any) => ({
-    id: item.id,
+  
+  return items.map((item: any) => ({
+    id: item.id || `category-${Math.random().toString(36).substr(2, 9)}`,
     name: item.name,
     icon: item.icon || 'default-icon',
     count: item.count || 0,
@@ -48,16 +56,23 @@ export interface PaginatedResponse<T> {
 
 export const getTools = async (page: number = 1, perPage: number = 10): Promise<PaginatedResponse<Tool>> => {
   const response = await api.get(`/tools?page=${page}&per_page=${perPage}`);
-  if (!response.data.items || !Array.isArray(response.data.items)) {
+  // Check if response.data is an array directly or has items property
+  const items = Array.isArray(response.data) ? response.data : 
+                (response.data.items && Array.isArray(response.data.items)) ? response.data.items : 
+                [];
+  
+  if (items.length === 0) {
+    console.error('No items found in response:', response.data);
     throw new Error('Invalid data format received from server');
   }
-  const tools = response.data.items.map((item: any) => ({
+  
+  const tools = items.map((item: any) => ({
     id: item.id,
     name: item.name,
     slug: item.slug || item.name.toLowerCase().replace(/\s+/g, '-'),
     categories: Array.isArray(item.categories) ? item.categories : 
                Array.isArray(item.category) ? item.category :
-               item.category ? [item.category] : [],
+               typeof item.category === 'string' ? [item.category] : [],
     short_description: item.description || item.short_description || '',
     logo: item.logo || item.logo_url || item.resource_url || '/placeholder.svg',
     rating: typeof item.rating === 'number' ? item.rating : 0,
@@ -68,6 +83,7 @@ export const getTools = async (page: number = 1, perPage: number = 10): Promise<
     website_url: item.website_url || item.resource_url || '',
     created_at: item.created_at ? new Date(item.created_at).toISOString() : new Date().toISOString()
   }));
+  
   return {
     data: tools,
     total: response.data.total || tools.length,
@@ -79,16 +95,23 @@ export const getTools = async (page: number = 1, perPage: number = 10): Promise<
 
 export const getToolsByCategory = async (categorySlug: string): Promise<Tool[]> => {
   const response = await api.get(`/categories/${categorySlug}/tools`);
-  if (!response.data.items || !Array.isArray(response.data.items)) {
+  // Check if response.data is an array directly (some APIs return array at top level)
+  const items = Array.isArray(response.data) ? response.data : 
+                (response.data.items && Array.isArray(response.data.items)) ? response.data.items : 
+                [];
+  
+  if (items.length === 0) {
+    console.error('No items found in response:', response.data);
     throw new Error('Invalid data format received from server');
   }
-  return response.data.items.map((item: any) => ({
+  
+  return items.map((item: any) => ({
     id: item.id,
     name: item.name,
     slug: item.slug || item.name.toLowerCase().replace(/\s+/g, '-'),
     categories: Array.isArray(item.categories) ? item.categories : 
                Array.isArray(item.category) ? item.category :
-               item.category ? [item.category] : [],
+               typeof item.category === 'string' ? [item.category] : [],
     short_description: item.description || item.short_description || '',
     logo: item.logo || item.logo_url || item.resource_url || '/placeholder.svg',
     rating: typeof item.rating === 'number' ? item.rating : 0,
@@ -104,13 +127,19 @@ export const getToolsByCategory = async (categorySlug: string): Promise<Tool[]> 
 export const getToolBySlug = async (slug: string): Promise<Tool> => {
   const response = await api.get(`/tools/${slug}`);
   const item = response.data;
+  
+  if (!item || !item.id) {
+    console.error('Invalid tool data received:', item);
+    throw new Error('Invalid tool data received from server');
+  }
+  
   return {
     id: item.id,
     name: item.name,
     slug: item.slug || item.name.toLowerCase().replace(/\s+/g, '-'),
     categories: Array.isArray(item.categories) ? item.categories : 
                Array.isArray(item.category) ? item.category :
-               item.category ? [item.category] : [],
+               typeof item.category === 'string' ? [item.category] : [],
     short_description: item.description || item.short_description || '',
     logo: item.logo || item.logo_url || item.resource_url || '/placeholder.svg',
     rating: typeof item.rating === 'number' ? item.rating : 0,
