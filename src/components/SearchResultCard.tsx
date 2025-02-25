@@ -26,9 +26,13 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
       <Link to={url.replace('/tools/', '/tool/')} className="block">
         <div className="flex items-center space-x-4 p-4 hover:bg-purple-50 rounded-lg transition-colors">
           <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${type === 'tool' ? 'bg-purple-100' : 'bg-green-100'}`}>
-            <span className={`text-sm font-medium ${type === 'tool' ? 'text-purple-800' : 'text-green-800'}`}>
-              {type === 'tool' ? 'T' : 'N'}
-            </span>
+            {type === 'tool' ? (
+              <div className="text-purple-800">
+                {React.createElement(getCategoryIcon(category), { className: 'w-5 h-5' })}
+              </div>
+            ) : (
+              <span className="text-sm font-medium text-green-800">N</span>
+            )}
           </div>
           <div className="flex-1 min-w-0">
             <h3 className="text-base font-medium text-gray-900 truncate group-hover:text-purple-600 transition-colors">

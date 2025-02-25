@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
@@ -87,13 +87,21 @@ const NewsDetail = () => {
         </Button>
 
         <article>
-          <div className="aspect-w-16 aspect-h-9 mb-8">
-            <img
-              src={news.image || "/placeholder-news.jpg"}
-              alt={news.title}
-              className="rounded-lg object-cover w-full h-64 md:h-96"
-            />
-          </div>
+          {news.image && (
+            <div className="aspect-w-16 aspect-h-9 mb-8">
+              <img
+                src={news.image}
+                alt={news.title}
+                className="rounded-lg object-cover w-full h-64 md:h-96"
+                onError={(e) => {
+                  // Hide the parent div if image fails to load
+                  if (e.currentTarget.parentElement) {
+                    e.currentTarget.parentElement.style.display = 'none';
+                  }
+                }}
+              />
+            </div>
+          )}
 
           <div className="flex items-center text-sm text-gray-500 mb-4">
             <Calendar className="w-4 h-4 mr-2" />

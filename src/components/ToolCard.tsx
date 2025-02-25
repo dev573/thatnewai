@@ -1,4 +1,5 @@
 
+import React, { useState } from "react";
 import { Star } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
@@ -40,11 +41,29 @@ export const ToolCard = ({
       <div className="p-6">
         <div className="flex items-start justify-between">
           <div className="flex items-center space-x-4">
-            <img
-              src={logo}
-              alt={name}
-              className="w-12 h-12 rounded-lg object-cover"
-            />
+            {logo && logo !== '/placeholder.svg' ? (
+              <img
+                src={logo}
+                alt={name}
+                className="w-12 h-12 rounded-lg object-cover"
+                onError={(e) => {
+                  // If image fails to load, set src to empty to trigger the fallback
+                  e.currentTarget.src = '';
+                }}
+              />
+            ) : (
+              <div className="w-12 h-12 rounded-lg bg-purple-100 flex items-center justify-center">
+                {categories && categories.length > 0 ? (
+                  <div className="text-purple-600">
+                    {React.createElement(getCategoryIcon(categories[0]), { className: "w-6 h-6" })}
+                  </div>
+                ) : (
+                  <div className="text-purple-600 text-lg font-bold">
+                    {name.charAt(0)}
+                  </div>
+                )}
+              </div>
+            )}
             <div>
               <h3 className="text-lg font-semibold text-gray-900 group-hover:text-purple-600 transition-colors">
                 {name}

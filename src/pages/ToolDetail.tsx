@@ -1,5 +1,5 @@
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
 import { Star, ExternalLink, Calendar } from "lucide-react";
@@ -61,11 +61,29 @@ const ToolDetail = () => {
         <div className="space-y-8">
           <div className="bg-white/50 backdrop-blur-lg rounded-xl shadow-sm border border-gray-200 p-8">
             <div className="flex items-start space-x-6">
-              <img
-                src={tool.logo || '/placeholder.svg'}
-                alt={tool.name}
-                className="w-20 h-20 rounded-lg object-cover bg-white"
-              />
+              {tool.logo && tool.logo !== '/placeholder.svg' ? (
+                <img
+                  src={tool.logo}
+                  alt={tool.name}
+                  className="w-20 h-20 rounded-lg object-cover bg-white"
+                  onError={(e) => {
+                    // If image fails to load, set src to empty to trigger the fallback
+                    e.currentTarget.src = '';
+                  }}
+                />
+              ) : (
+                <div className="w-20 h-20 rounded-lg bg-purple-100 flex items-center justify-center">
+                  {tool.categories && tool.categories.length > 0 ? (
+                    <div className="text-purple-600">
+                      {React.createElement(getCategoryIcon(tool.categories[0]), { className: "w-10 h-10" })}
+                    </div>
+                  ) : (
+                    <div className="text-purple-600 text-2xl font-bold">
+                      {tool.name.charAt(0)}
+                    </div>
+                  )}
+                </div>
+              )}
               <div className="flex-1">
                 <div className="flex items-start justify-between">
                   <div>

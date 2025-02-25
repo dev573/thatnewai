@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
@@ -96,13 +96,21 @@ const AINews = () => {
                 className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow"
               >
                 <div className="md:flex">
-                  <div className="md:w-1/3">
-                    <img
-                      src={news.image || "/placeholder-news.jpg"}
-                      alt={news.title}
-                      className="h-48 w-full object-cover md:h-full"
-                    />
-                  </div>
+                  {news.image ? (
+                    <div className="md:w-1/3">
+                      <img
+                        src={news.image}
+                        alt={news.title}
+                        className="h-48 w-full object-cover md:h-full"
+                        onError={(e) => {
+                          // Hide the parent div if image fails to load
+                          if (e.currentTarget.parentElement) {
+                            e.currentTarget.parentElement.style.display = 'none';
+                          }
+                        }}
+                      />
+                    </div>
+                  ) : null}
                   <div className="p-6 md:w-2/3">
                     <div className="flex items-center text-sm text-gray-500 mb-2">
                       <Calendar className="w-4 h-4 mr-2" />
