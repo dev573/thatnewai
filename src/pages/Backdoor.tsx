@@ -5,10 +5,12 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Mail, Lock } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
+import { useAuth } from "../hooks/useAuth";
 
 const Backdoor = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { login } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -18,23 +20,15 @@ const Backdoor = () => {
     setIsLoading(true);
 
     try {
-      // TODO: Replace with actual API endpoint
-      if (email === "admin@thatnewai.com" && password === "admin123") {
-        // Simulating API call delay
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
-        // TODO: Store JWT token in localStorage
-        localStorage.setItem("adminToken", "dummy-token");
-        
-        toast({
-          title: "Login successful",
-          description: "Welcome to ThatNewAI Admin Panel",
-        });
-        
-        navigate("/admin/dashboard");
-      } else {
-        throw new Error("Invalid credentials");
-      }
+      // Use the JWT authentication login method
+      await login(email, password);
+      
+      toast({
+        title: "Login successful",
+        description: "Welcome to ThatNewAI Admin Panel",
+      });
+      
+      navigate("/admin/dashboard");
     } catch (error) {
       toast({
         title: "Login failed",

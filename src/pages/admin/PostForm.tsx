@@ -8,6 +8,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import MDEditor from '@uiw/react-md-editor';
 import { Upload } from 'lucide-react';
+import { useAuth } from "../../hooks/useAuth";
 
 interface PostFormData {
   title: string;
@@ -44,6 +45,7 @@ const PostForm = () => {
   const navigate = useNavigate();
   const { slug } = useParams();
   const { toast } = useToast();
+  const { isAuthenticated, user } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [tagsInput, setTagsInput] = useState("");
   const [dragActive, setDragActive] = useState(false);
@@ -61,11 +63,6 @@ const PostForm = () => {
   });
 
   useEffect(() => {
-    const token = localStorage.getItem("adminToken");
-    if (!token) {
-      navigate("/backdoor");
-      return;
-    }
 
     if (slug) {
       // Fetch existing post data if editing

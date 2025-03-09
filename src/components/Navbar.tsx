@@ -1,12 +1,14 @@
 
 import { useState } from "react";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Layout } from "lucide-react";
 import { Button } from "./ui/button";
 import { NewsletterDialog } from "./NewsletterDialog";
+import { useAuth } from "../hooks/useAuth";
 
 export const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [showNewsletter, setShowNewsletter] = useState(false);
+  const { user, isAuthenticated } = useAuth();
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-lg border-b">
@@ -33,6 +35,12 @@ export const Navbar = () => {
             <a href="/submit" className="text-gray-700 hover:text-purple-600 transition-colors">
               Submit
             </a>
+            {isAuthenticated && user?.is_admin && (
+              <a href="/admin/dashboard" className="flex items-center text-gray-700 hover:text-purple-600 transition-colors">
+                <Layout size={18} className="mr-1" />
+                Dashboard
+              </a>
+            )}
             <Button 
               className="bg-purple-600 hover:bg-purple-700 text-white"
               onClick={() => setShowNewsletter(true)}
@@ -79,6 +87,15 @@ export const Navbar = () => {
             >
               Submit
             </a>
+            {isAuthenticated && user?.is_admin && (
+              <a
+                href="/admin/dashboard"
+                className="flex items-center px-3 py-2 rounded-md text-gray-700 hover:text-purple-600 hover:bg-purple-50 transition-colors"
+              >
+                <Layout size={18} className="mr-1" />
+                Dashboard
+              </a>
+            )}
             <Button 
               className="w-full bg-purple-600 hover:bg-purple-700 text-white mt-4"
               onClick={() => setShowNewsletter(true)}

@@ -11,6 +11,7 @@ import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
 import MDEditor from '@uiw/react-md-editor';
+import { useAuth } from "../../hooks/useAuth";
 
 interface ToolFormData {
   name: string;
@@ -36,6 +37,7 @@ export default function EditToolForm() {
   const navigate = useNavigate();
   const { slug } = useParams();
   const { toast } = useToast();
+  const { isAuthenticated, user } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [tagsInput, setTagsInput] = useState("");
   const [formData, setFormData] = useState<ToolFormData>({
@@ -49,11 +51,6 @@ export default function EditToolForm() {
   });
 
   useEffect(() => {
-    const token = localStorage.getItem("adminToken");
-    if (!token) {
-      navigate("/backdoor");
-      return;
-    }
 
     if (!slug) {
       toast({
@@ -61,7 +58,7 @@ export default function EditToolForm() {
         description: "No tool slug provided",
         variant: "destructive",
       });
-      navigate("/admin/dashboard");
+      navigate("/admin/dashboard", { replace: false });
       return;
     }
 
@@ -150,7 +147,7 @@ export default function EditToolForm() {
         description: "Tool updated successfully",
       });
 
-      navigate("/admin/dashboard");
+      navigate("/admin/dashboard", { replace: false });
     } catch (error) {
       toast({
         title: "Error",

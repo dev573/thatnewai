@@ -9,6 +9,8 @@ import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
 import MDEditor from '@uiw/react-md-editor';
+import { useAuth } from "../../hooks/useAuth";
+import { api } from "@/lib/api";
 
 interface NewToolFormData {
   name: string;
@@ -42,6 +44,7 @@ const generateSlug = (title: string): string => {
 export default function NewToolForm() {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { isAuthenticated, user } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [tagsInput, setTagsInput] = useState("");
   const [formData, setFormData] = useState<NewToolFormData>({
@@ -54,41 +57,30 @@ export default function NewToolForm() {
     featured: false
   });
 
+  // JWT auth is now handled by ProtectedRoute component
   useEffect(() => {
-    const token = localStorage.getItem("adminToken");
-    if (!token) {
-      navigate("/backdoor");
-      return;
-    }
-  }, [navigate]);
+    // Any initialization code if needed
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
     try {
-      const response = await fetch(`/api/tools`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          ...formData,
-          slug: generateSlug(formData.name)
-        }),
+      // Use authenticated API call
+      // Use authenticated API client instead of fetch
+      await api.post('/tools', {
+        ...formData,
+        slug: generateSlug(formData.name)
       });
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || 'Failed to create tool');
-      }
 
       toast({
         title: "Success",
         description: "Tool created successfully",
       });
 
-      navigate("/admin/dashboard");
+      // Use replace: false to prevent history replacement
+      navigate("/admin/dashboard", { replace: false });
     } catch (error) {
       toast({
         title: "Error",

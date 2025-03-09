@@ -1,8 +1,21 @@
 import axios from 'axios';
 
+// Create axios instance with base configuration
 export const api = axios.create({
   baseURL: 'http://localhost:8000/api',
 });
+
+// Add auth token to outgoing requests if available
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('auth_token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
 
 export interface Category {
   id: string;
@@ -37,7 +50,25 @@ export const getCategories = async (): Promise<Category[]> => {
     throw new Error('Invalid data format received from server');
   }
   
-  return items.map((item: any) => ({
+  return items.map((item: {
+    id?: string;
+    name: string;
+    slug?: string;
+    categories?: string[];
+    category?: string[] | string;
+    description?: string;
+    short_description?: string;
+    logo?: string;
+    logo_url?: string;
+    resource_url?: string;
+    rating?: number;
+    pricing_type?: string;
+    type?: string;
+    website_url?: string;
+    created_at?: string | number | Date;
+    icon?: string;
+    count?: number;
+  }) => ({
     id: item.id || `category-${Math.random().toString(36).substr(2, 9)}`,
     name: item.name,
     icon: item.icon || 'default-icon',
@@ -66,7 +97,23 @@ export const getTools = async (page: number = 1, perPage: number = 10): Promise<
     throw new Error('Invalid data format received from server');
   }
   
-  const tools = items.map((item: any) => ({
+  const tools = items.map((item: {
+    id?: string;
+    name: string;
+    slug?: string;
+    categories?: string[];
+    category?: string[] | string;
+    description?: string;
+    short_description?: string;
+    logo?: string;
+    logo_url?: string;
+    resource_url?: string;
+    rating?: number;
+    pricing_type?: string;
+    type?: string;
+    website_url?: string;
+    created_at?: string | number | Date;
+  }) => ({
     id: item.id,
     name: item.name,
     slug: item.slug || item.name.toLowerCase().replace(/\s+/g, '-'),
@@ -105,7 +152,25 @@ export const getToolsByCategory = async (categorySlug: string): Promise<Tool[]> 
     throw new Error('Invalid data format received from server');
   }
   
-  return items.map((item: any) => ({
+  return items.map((item: {
+    id?: string;
+    name: string;
+    slug?: string;
+    categories?: string[];
+    category?: string[] | string;
+    description?: string;
+    short_description?: string;
+    logo?: string;
+    logo_url?: string;
+    resource_url?: string;
+    rating?: number;
+    pricing_type?: string;
+    type?: string;
+    website_url?: string;
+    created_at?: string | number | Date;
+    icon?: string;
+    count?: number;
+  }) => ({
     id: item.id,
     name: item.name,
     slug: item.slug || item.name.toLowerCase().replace(/\s+/g, '-'),

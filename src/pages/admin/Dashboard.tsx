@@ -4,7 +4,8 @@ import { Navbar } from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { Plus, Edit2, Trash2, ArrowUpDown } from "lucide-react";
-import { getTools } from "@/lib/api";
+import { getTools, api } from "@/lib/api";
+import { useAuth } from "../../hooks/useAuth";
 
 interface Tool {
   id: string;
@@ -30,6 +31,7 @@ interface PaginatedResponse<T> {
 const AdminDashboard = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { user, isAuthenticated } = useAuth();
   const [tools, setTools] = useState<Tool[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -39,11 +41,6 @@ const AdminDashboard = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem("adminToken");
-    if (!token) {
-      navigate("/backdoor");
-      return;
-    }
 
     const fetchData = async () => {
       try {
@@ -77,7 +74,8 @@ const AdminDashboard = () => {
     if (!window.confirm("Are you sure you want to delete this tool?")) return;
 
     try {
-      await fetch(`/api/admin/tools/${slug}`, { method: "DELETE" });
+      // Use authenticated API client instead of direct fetch
+      await api.delete(`/admin/tools/${slug}`);
       setTools(tools.filter(tool => tool.slug !== slug));
       toast({
         title: "Success",
@@ -99,7 +97,7 @@ const AdminDashboard = () => {
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
           <Button
-            onClick={() => navigate("/admin/tools/new")}
+            onClick={() => navigate("/admin/tools/new", { replace: false })}
             className="bg-purple-600 hover:bg-purple-700"
           >
             <Plus className="w-4 h-4 mr-2" />
@@ -183,7 +181,7 @@ const AdminDashboard = () => {
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => navigate(`/admin/tools/edit/${tool.slug}`)}
+                          onClick={() => navigate(`/admin/tools/edit/${tool.slug}`, { replace: false })}
                           className="text-purple-600 hover:text-purple-900 mr-2"
                         >
                           <Edit2 className="w-4 h-4" />
