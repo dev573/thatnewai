@@ -33,15 +33,23 @@ export const Footer = () => {
             >
               <Linkedin className="h-6 w-6" />
             </a>
-          </div>
-          <p className="mt-8 text-center text-base text-gray-500">
-          <a
+            <a
               href="https://aivineet.com/"
               target="_blank"
               rel="noopener noreferrer"
               className="text-gray-400 hover:text-purple-600"
             >
-             Powered by AIVineet
+              <img src="/favicon.png" alt="AIVineet" className="h-6 w-6" />
+            </a>
+          </div>
+          <p className="mt-8 text-center text-base text-gray-500">
+            <a
+              href="https://aivineet.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-gray-500 hover:text-purple-600"
+            >
+              Powered by AIVineet
             </a>
           </p>
           <p className="mt-2 text-center text-sm text-gray-400">
