@@ -4,6 +4,7 @@ import { ToolCard } from "@/components/ToolCard";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Tool, getTools } from "@/lib/api";
+import { LoaderFull, SkeletonLoader } from "@/components/ui/loader";
 
 const TOOLS_PER_PAGE = 9;
 
@@ -45,9 +46,16 @@ const Latest = () => {
         </div>
 
         {loading ? (
-          <div className="text-center py-10">
-            <p className="text-lg">Loading tools...</p>
-          </div>
+          <>
+            <LoaderFull text="Loading latest AI tools..." />
+            <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 mt-8 opacity-50">
+              {[...Array(9)].map((_, index) => (
+                <div key={index} className="border border-gray-200 rounded-xl p-6 shadow-sm">
+                  <SkeletonLoader className="w-full h-48" />
+                </div>
+              ))}
+            </div>
+          </>
         ) : error ? (
           <div className="text-center py-10 text-red-500">
             <p className="text-lg">{error}</p>

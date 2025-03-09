@@ -5,16 +5,19 @@ import { Button } from "./ui/button";
 import { useNavigate } from "react-router-dom";
 import { SearchResult, searchTools } from "@/lib/api";
 import SearchResultCard from "./SearchResultCard";
+import { Loader } from "./ui/loader";
 
 export const Hero = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [suggestions, setSuggestions] = useState<SearchResult[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchSuggestions = async () => {
       if (searchQuery.trim().length > 0) {
+        setIsLoading(true);
         try {
           const response = await searchTools(searchQuery, 1, 5);
           setSuggestions(response.items);
@@ -23,6 +26,8 @@ export const Hero = () => {
           console.error('Failed to fetch suggestions:', err);
           setSuggestions([]);
           setShowSuggestions(false);
+        } finally {
+          setIsLoading(false);
         }
       } else {
         setSuggestions([]);
@@ -38,6 +43,7 @@ export const Hero = () => {
     e.preventDefault();
     if (searchQuery.trim()) {
       setShowSuggestions(false);
+      setIsLoading(false); // Reset loading state when navigating
       navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
     }
   };
@@ -82,7 +88,13 @@ export const Hero = () => {
             </Button>
           </div>
           
-          {showSuggestions && suggestions.length > 0 && (
+          {isLoading && searchQuery.trim().length > 0 && (
+            <div className="absolute w-full mt-2 bg-white rounded-xl shadow-xl border border-gray-100 z-50 p-6">
+              <Loader size="md" text="Searching for AI tools..." />
+            </div>
+          )}
+          
+          {!isLoading && showSuggestions && suggestions.length > 0 && (
             <div className="absolute w-full mt-2 bg-white rounded-xl shadow-xl border border-gray-100 z-50 divide-y divide-gray-100">
               {suggestions.map((result) => (
                 <SearchResultCard

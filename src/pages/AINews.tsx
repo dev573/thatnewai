@@ -5,6 +5,7 @@ import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Calendar, Clock } from "lucide-react";
 import { fetchNews, NewsItem } from "@/services/newsApi";
+import { LoaderFull, SkeletonLoader } from "@/components/ui/loader";
 
 const ITEMS_PER_PAGE = 6;
 
@@ -36,7 +37,10 @@ const AINews = () => {
         } 
         // If we're on page > 1 and get items, update total count
         else if (response.items.length > 0) {
-          setTotalItems(Math.max(totalItems, (currentPage - 1) * ITEMS_PER_PAGE + response.items.length));
+          // Use functional update to avoid dependency on totalItems
+          setTotalItems(prevTotal => 
+            Math.max(prevTotal, (currentPage - 1) * ITEMS_PER_PAGE + response.items.length)
+          );
         }
         // If we're on page > 1 and get no items, adjust total count
         else if (response.items.length === 0) {
@@ -64,9 +68,9 @@ const AINews = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white flex flex-col">
       <Navbar />
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-16">
+      <main className="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-16">
         <div className="text-center mb-12">
           <h1 className="text-3xl font-bold text-gray-900">AI News</h1>
           <p className="mt-4 text-lg text-gray-600">
@@ -75,9 +79,34 @@ const AINews = () => {
         </div>
 
         {loading ? (
-          <div className="text-center py-10">
-            <p>Loading news...</p>
-          </div>
+          <>
+            <LoaderFull text="Loading latest AI news..." variant="primary" />
+            
+            <div className="space-y-8 mt-8 opacity-60">
+              {[...Array(3)].map((_, index) => (
+                <article key={index} className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                  <div className="md:flex">
+                    <div className="md:w-1/3">
+                      <div className="h-48 w-full bg-gray-200 md:h-full"></div>
+                    </div>
+                    <div className="p-6 md:w-2/3">
+                      <div className="flex items-center text-sm text-gray-300 mb-2">
+                        <Calendar className="w-4 h-4 mr-2 text-gray-300" />
+                        <div className="w-20 h-4 bg-gray-200 rounded"></div>
+                        <Clock className="w-4 h-4 ml-4 mr-2 text-gray-300" />
+                        <div className="w-16 h-4 bg-gray-200 rounded"></div>
+                      </div>
+                      <SkeletonLoader className="mb-4" />
+                      <div className="flex items-center justify-between mt-6">
+                        <div className="w-28 h-4 bg-gray-200 rounded"></div>
+                        <div className="w-24 h-8 bg-gray-200 rounded-md"></div>
+                      </div>
+                    </div>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </>
         ) : error ? (
           <div className="text-center py-10 text-red-500">
             <p>{error}</p>

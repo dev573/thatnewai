@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { Category, getCategories } from "@/lib/api";
 import { getCategoryIcon } from "@/lib/categoryIcons";
+import { LoaderFull } from "./ui/loader";
 
 export const CategoriesGrid = () => {
   const [categories, setCategories] = useState<Category[]>([]);
@@ -32,9 +33,13 @@ export const CategoriesGrid = () => {
     return (
       <section className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <h2 className="text-3xl font-bold text-gray-900">Loading categories...</h2>
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-bold text-gray-900">Browse Categories</h2>
+            <p className="mt-4 text-lg text-gray-600">
+              Explore AI tools by category to find exactly what you need
+            </p>
           </div>
+          <LoaderFull text="Loading categories..." variant="secondary" />
         </div>
       </section>
     );

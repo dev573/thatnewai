@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { ToolCard } from "@/components/ToolCard";
 import { Tool, getTools } from "@/lib/api";
 import { Button } from "./ui/button";
+import { LoaderFull } from "./ui/loader";
 
 export const FeaturedTools = () => {
   const [tools, setTools] = useState<Tool[]>([]);
@@ -33,9 +34,13 @@ export const FeaturedTools = () => {
     return (
       <section className="py-16 bg-gradient-to-b from-white to-purple-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <h2 className="text-3xl font-bold text-gray-900">Loading featured tools...</h2>
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-bold text-gray-900">Featured Tools</h2>
+            <p className="mt-4 text-lg text-gray-600">
+              Discover the most popular AI tools used by professionals
+            </p>
           </div>
+          <LoaderFull text="Loading featured tools..." />
         </div>
       </section>
     );
