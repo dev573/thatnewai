@@ -49,10 +49,13 @@ const Login: React.FC = () => {
     <div className="flex flex-col min-h-screen">
       <Navbar />
       
-      <main className="flex-grow container mx-auto px-4 py-8">
-        <div className="max-w-md mx-auto bg-white rounded-lg shadow-md overflow-hidden">
-          <div className="px-6 py-8">
-            <h2 className="text-2xl font-bold text-center text-gray-800 mb-8">Log In to ThatNewAI</h2>
+      <main className="flex-grow container mx-auto px-4 py-16 flex items-center justify-center">
+        <div className="max-w-md w-full mx-auto bg-white rounded-lg shadow-lg overflow-hidden">
+          <div className="px-8 pt-16 pb-12">
+            <div className="flex flex-col items-center mb-8">
+              <img src="/favicon.png" alt="ThatNewAI Logo" className="w-24 h-24 mb-4" />
+              <h2 className="text-2xl font-bold text-center text-gray-800">Log In to ThatNewAI</h2>
+            </div>
             
             {errorMessage && (
               <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">

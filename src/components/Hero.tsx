@@ -56,7 +56,7 @@ export const Hero = () => {
 
   return (
     <div className="relative bg-white">
-      <div className="max-w-7xl mx-auto pt-24 pb-4 px-4 sm:pt-28 sm:pb-6 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto pt-28 pb-4 px-4 sm:pt-32 sm:pb-6 sm:px-6 lg:px-8">
         <div className="text-center">
           <span className="block text-sm font-semibold text-purple-600 tracking-wide uppercase animate-fade-in">
             Discover AI Tools
