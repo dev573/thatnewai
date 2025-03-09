@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
-import { Calendar, Clock } from "lucide-react";
+import { Calendar, Clock, Newspaper, BarChart, Lightbulb, Bot } from "lucide-react";
 import { fetchNews, NewsItem } from "@/services/newsApi";
 import { LoaderFull, SkeletonLoader } from "@/components/ui/loader";
 
@@ -89,7 +89,7 @@ const AINews = () => {
                     <div className="md:w-1/3">
                       <div className="h-48 w-full bg-gray-200 md:h-full"></div>
                     </div>
-                    <div className="p-6 md:w-2/3">
+                    <div className="p-6 md:w-3/4 flex flex-col justify-between">
                       <div className="flex items-center text-sm text-gray-300 mb-2">
                         <Calendar className="w-4 h-4 mr-2 text-gray-300" />
                         <div className="w-20 h-4 bg-gray-200 rounded"></div>
@@ -124,23 +124,31 @@ const AINews = () => {
                 key={news.id}
                 className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow"
               >
-                <div className="md:flex">
-                  {news.image ? (
-                    <div className="md:w-1/3">
+                <div className="md:flex items-stretch">
+                  <div className="md:w-1/4 flex-shrink-0">
+                    {news.image ? (
                       <img
                         src={news.image}
                         alt={news.title}
                         className="h-48 w-full object-cover md:h-full"
                         onError={(e) => {
-                          // Hide the parent div if image fails to load
-                          if (e.currentTarget.parentElement) {
-                            e.currentTarget.parentElement.style.display = 'none';
+                          // If image fails to load, hide this element and let React show the fallback
+                          const parent = e.currentTarget.parentElement;
+                          if (parent) {
+                            parent.style.display = 'none';
                           }
                         }}
                       />
-                    </div>
-                  ) : null}
-                  <div className="p-6 md:w-2/3">
+                    ) : (
+                      <div className="h-48 w-full md:h-full flex items-center justify-center bg-gradient-to-br from-purple-50 to-gray-100">
+                        <div className="flex flex-col items-center justify-center text-center p-4">
+                          {renderIcon(news.id, news.title)}
+                          <span className="text-sm text-gray-500 mt-2 line-clamp-2">{news.title}</span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                  <div className="p-6 md:w-3/4 flex flex-col justify-between">
                     <div className="flex items-center text-sm text-gray-500 mb-2">
                       <Calendar className="w-4 h-4 mr-2" />
                       {news.date}
@@ -151,11 +159,13 @@ const AINews = () => {
                       {news.title}
                     </h2>
                     <p className="text-gray-600 mb-4">{news.description}</p>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-gray-500">By {news.author}</span>
+                    <div className="flex items-center justify-between mt-4">
+                      <span className="text-sm text-gray-500 font-medium">
+                        {news.author ? `By ${news.author}` : 'AI News Update'}
+                      </span>
                       <Button
                         variant="outline"
-                        className="text-purple-600 hover:text-purple-700 border-purple-600 hover:border-purple-700"
+                        className="text-purple-600 hover:text-purple-700 border-purple-600 hover:border-purple-700 whitespace-nowrap"
                         onClick={() => handleReadMore(news)}
                       >
                         Read More
@@ -201,6 +211,22 @@ const AINews = () => {
       <Footer />
     </div>
   );
+};
+
+// Helper function to render an appropriate AI icon for a news item
+const renderIcon = (id: string, title: string) => {
+  // Use deterministic icon selection based on the ID or title
+  const hash = id ? id.split('').reduce((a, b) => a + b.charCodeAt(0), 0) : title.length;
+  const iconIndex = hash % 4;
+  
+  const icons = [
+    <Bot key="bot" className="h-16 w-16 text-purple-500" />,
+    <Newspaper key="news" className="h-16 w-16 text-purple-500" />,
+    <Lightbulb key="light" className="h-16 w-16 text-purple-500" />,
+    <BarChart key="chart" className="h-16 w-16 text-purple-500" />
+  ];
+  
+  return icons[iconIndex];
 };
 
 export default AINews;
