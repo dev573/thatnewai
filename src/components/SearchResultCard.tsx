@@ -35,7 +35,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
             )}
           </div>
           <div className="flex-1 min-w-0">
-            <h3 className="text-base font-medium text-gray-900 truncate group-hover:text-purple-600 transition-colors">
+            <h3 className="text-base font-medium text-gray-900 truncate group-hover:text-purple-600 transition-colors text-left">
               {name}
             </h3>
             <p className="text-sm text-gray-500 truncate">{description}</p>
