@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Create axios instance with base configuration
 export const api = axios.create({
-  baseURL: 'http://localhost:8000/api',
+  baseURL: 'http://54.211.3.115:8080/api',
 });
 
 // Add auth token to outgoing requests if available

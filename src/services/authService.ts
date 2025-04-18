@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // Define base API URL
-const API_URL = 'http://localhost:8000/api';
+const API_URL = 'http://54.211.3.115:8080/api';
 
 // Define user interfaces
 export interface User {

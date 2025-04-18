@@ -19,7 +19,7 @@ export interface NewsResponse {
 
 export const fetchNews = async (page: number = 1, perPage: number = 10): Promise<NewsResponse> => {
   try {
-    const response = await fetch(`http://localhost:8000/api/news?page=${page}&per_page=${perPage}`);
+    const response = await fetch(`http://54.211.3.115:8080/api/news?page=${page}&per_page=${perPage}`);
     
     if (!response.ok) {
       throw new Error(`API error: ${response.status}`);
@@ -36,7 +36,7 @@ export const fetchNews = async (page: number = 1, perPage: number = 10): Promise
 export const fetchNewsById = async (slug: string): Promise<NewsItem | null> => {
   try {
     // Fetch news by slug
-    const response = await fetch(`http://localhost:8000/api/news/${encodeURIComponent(slug)}`);
+    const response = await fetch(`http://54.211.3.115:8080/api/news/${encodeURIComponent(slug)}`);
     
     if (!response.ok) {
       throw new Error(`API error: ${response.status}`);
