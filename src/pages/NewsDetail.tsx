@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
-import { Calendar, ArrowLeft, ExternalLink, User, FileText } from "lucide-react";
+import { Calendar, ArrowLeft, ExternalLink, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { fetchNewsById, Article } from "@/services/newsApi";
 import MDEditor from "@uiw/react-md-editor";
@@ -163,39 +163,35 @@ const NewsDetail = () => {
             </div>
           )}
 
-          {/* ArXiv-specific details */}
+          {/* ArXiv paper details — compact when content exists */}
           {isArxiv && (
-            <div className="bg-gray-50 rounded-lg p-6 mb-8 space-y-4">
-              <h3 className="text-lg font-semibold text-gray-900">Paper Details</h3>
+            <div className="bg-gray-50 rounded-lg p-5 mb-8 border border-gray-200">
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-base font-semibold text-gray-900 flex items-center gap-2">
+                  <FileText className="w-4 h-4 text-purple-600" /> Paper Details
+                </h3>
+                {article.metadata?.pdf_url && (
+                  <a
+                    href={article.metadata.pdf_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center px-3 py-1.5 text-sm bg-purple-600 text-white rounded-lg hover:bg-purple-700 font-medium"
+                  >
+                    <FileText className="w-3.5 h-3.5 mr-1.5" /> View PDF
+                  </a>
+                )}
+              </div>
               {article.metadata?.authors && (
-                <div className="flex items-start gap-2">
-                  <User className="w-5 h-5 text-gray-400 mt-0.5 flex-shrink-0" />
-                  <div>
-                    <p className="text-sm font-medium text-gray-700">Authors</p>
-                    <p className="text-sm text-gray-600">{article.metadata.authors}</p>
-                  </div>
+                <div className="mb-2">
+                  <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Authors</span>
+                  <p className="text-sm text-gray-700 mt-0.5">{article.metadata.authors}</p>
                 </div>
               )}
-              {article.metadata?.abstract && (
-                <div className="flex items-start gap-2">
-                  <FileText className="w-5 h-5 text-gray-400 mt-0.5 flex-shrink-0" />
-                  <div>
-                    <p className="text-sm font-medium text-gray-700">Abstract</p>
-                    <p className="text-sm text-gray-600 leading-relaxed">
-                      {article.metadata.abstract}
-                    </p>
-                  </div>
+              {article.metadata?.abstract && !article.content && (
+                <div>
+                  <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Abstract</span>
+                  <p className="text-sm text-gray-600 leading-relaxed mt-0.5">{article.metadata.abstract}</p>
                 </div>
-              )}
-              {article.metadata?.pdf_url && (
-                <a
-                  href={article.metadata.pdf_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center text-sm text-purple-600 hover:text-purple-800 font-medium"
-                >
-                  <FileText className="w-4 h-4 mr-1" /> View PDF
-                </a>
               )}
             </div>
           )}
