@@ -1,106 +1,98 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
-import { Calendar, Clock, Newspaper, BarChart, Lightbulb, Bot } from "lucide-react";
-import { fetchNews, NewsItem } from "@/services/newsApi";
+import { Calendar, ExternalLink, Newspaper, Bot, Lightbulb, BarChart } from "lucide-react";
+import { fetchNews, Article } from "@/services/newsApi";
 import { LoaderFull, SkeletonLoader } from "@/components/ui/loader";
 
-const ITEMS_PER_PAGE = 6;
+const ITEMS_PER_PAGE = 12;
 
 const AINews = () => {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const category = searchParams.get("category") || undefined;
+
   const [currentPage, setCurrentPage] = useState(1);
-  const [newsItems, setNewsItems] = useState<NewsItem[]>([]);
-  const [totalItems, setTotalItems] = useState(0);
+  const [articles, setArticles] = useState<Article[]>([]);
+  const [totalPages, setTotalPages] = useState(1);
+  const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
-  // Calculate total pages based on actual data
-  const totalPages = Math.max(1, Math.ceil(totalItems / ITEMS_PER_PAGE));
 
   useEffect(() => {
-    const loadNews = async () => {
+    setCurrentPage(1);
+  }, [category]);
+
+  useEffect(() => {
+    const load = async () => {
       try {
         setLoading(true);
-        const response = await fetchNews(currentPage, ITEMS_PER_PAGE);
-        setNewsItems(response.items);
-        
-        // If we're on page 1, set the total items based on the number of items received
-        // This assumes that if we get fewer items than ITEMS_PER_PAGE, there are no more pages
-        if (currentPage === 1) {
-          const estimatedTotal = response.items.length < ITEMS_PER_PAGE 
-            ? response.items.length 
-            : ITEMS_PER_PAGE * 2; // Assume at least 2 pages if we get a full page
-          setTotalItems(estimatedTotal);
-        } 
-        // If we're on page > 1 and get items, update total count
-        else if (response.items.length > 0) {
-          // Use functional update to avoid dependency on totalItems
-          setTotalItems(prevTotal => 
-            Math.max(prevTotal, (currentPage - 1) * ITEMS_PER_PAGE + response.items.length)
-          );
-        }
-        // If we're on page > 1 and get no items, adjust total count
-        else if (response.items.length === 0) {
-          setTotalItems((currentPage - 1) * ITEMS_PER_PAGE);
-          // Go back to the last valid page
-          if (currentPage > 1) {
-            setCurrentPage(currentPage - 1);
-          }
-        }
-        
+        const response = await fetchNews(currentPage, ITEMS_PER_PAGE, { category });
+        setArticles(response.data);
+        setTotal(response.pagination.total);
+        setTotalPages(response.pagination.totalPages);
         setError(null);
-      } catch (err) {
+      } catch {
         setError("Failed to load news. Please try again later.");
-        console.error(err);
       } finally {
         setLoading(false);
       }
     };
+    load();
+  }, [currentPage, category]);
 
-    loadNews();
-  }, [currentPage]);
-
-  const handleReadMore = (news: NewsItem) => {
-    navigate(`/news/${news.slug}`);
+  const clearCategory = () => {
+    searchParams.delete("category");
+    setSearchParams(searchParams);
   };
 
   return (
     <div className="min-h-screen bg-white flex flex-col">
+      <Helmet>
+        <title>{category ? `${category.charAt(0).toUpperCase() + category.slice(1)} AI News | ThatNewAI` : "AI News | ThatNewAI"}</title>
+        <meta name="description" content={category ? `Latest ${category} news in artificial intelligence — curated by ThatNewAI.` : "Browse the latest AI news — models, tools, research papers, startups, and open source projects."} />
+        <link rel="canonical" href={`https://thatnewai.com/ai-news${category ? `?category=${category}` : ""}`} />
+      </Helmet>
       <Navbar />
       <main className="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-16">
-        <div className="text-center mb-12">
+        <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-gray-900">AI News</h1>
-          <p className="mt-4 text-lg text-gray-600">
+          <p className="mt-2 text-lg text-gray-600">
             Stay updated with the latest developments in artificial intelligence
           </p>
+          {category && (
+            <div className="mt-4 flex items-center justify-center gap-2">
+              <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-purple-100 text-purple-800 capitalize">
+                {category}
+              </span>
+              <button
+                onClick={clearCategory}
+                className="text-sm text-gray-500 hover:text-gray-800 underline"
+              >
+                Clear filter
+              </button>
+            </div>
+          )}
+          {!loading && (
+            <p className="mt-2 text-sm text-gray-500">{total} articles found</p>
+          )}
         </div>
 
         {loading ? (
           <>
             <LoaderFull text="Loading latest AI news..." variant="primary" />
-            
-            <div className="space-y-8 mt-8 opacity-60">
-              {[...Array(3)].map((_, index) => (
-                <article key={index} className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+            <div className="space-y-6 mt-8 opacity-60">
+              {[...Array(3)].map((_, i) => (
+                <article key={i} className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
                   <div className="md:flex">
-                    <div className="md:w-1/3">
-                      <div className="h-48 w-full bg-gray-200 md:h-full"></div>
+                    <div className="md:w-1/4">
+                      <div className="h-48 w-full bg-gray-200 md:h-full" />
                     </div>
-                    <div className="p-6 md:w-3/4 flex flex-col justify-between">
-                      <div className="flex items-center text-sm text-gray-300 mb-2">
-                        <Calendar className="w-4 h-4 mr-2 text-gray-300" />
-                        <div className="w-20 h-4 bg-gray-200 rounded"></div>
-                        <Clock className="w-4 h-4 ml-4 mr-2 text-gray-300" />
-                        <div className="w-16 h-4 bg-gray-200 rounded"></div>
-                      </div>
+                    <div className="p-6 md:w-3/4">
                       <SkeletonLoader className="mb-4" />
-                      <div className="flex items-center justify-between mt-6">
-                        <div className="w-28 h-4 bg-gray-200 rounded"></div>
-                        <div className="w-24 h-8 bg-gray-200 rounded-md"></div>
-                      </div>
                     </div>
                   </div>
                 </article>
@@ -110,66 +102,70 @@ const AINews = () => {
         ) : error ? (
           <div className="text-center py-10 text-red-500">
             <p>{error}</p>
-            <Button 
-              className="mt-4"
-              onClick={() => window.location.reload()}
-            >
+            <Button className="mt-4" onClick={() => window.location.reload()}>
               Try Again
             </Button>
           </div>
         ) : (
-          <div className="space-y-8">
-            {newsItems.map((news) => (
+          <div className="space-y-6">
+            {articles.map((article) => (
               <article
-                key={news.id}
-                className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow"
+                key={article._id}
+                className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow cursor-pointer"
+                onClick={() => navigate(`/news/${article.slug || article._id}`)}
               >
                 <div className="md:flex items-stretch">
                   <div className="md:w-1/4 flex-shrink-0">
-                    {news.image ? (
+                    {article.image_url ? (
                       <img
-                        src={news.image}
-                        alt={news.title}
+                        src={article.image_url}
+                        alt={article.title}
                         className="h-48 w-full object-cover md:h-full"
                         onError={(e) => {
-                          // If image fails to load, hide this element and let React show the fallback
                           const parent = e.currentTarget.parentElement;
-                          if (parent) {
-                            parent.style.display = 'none';
-                          }
+                          if (parent) parent.style.display = "none";
                         }}
                       />
                     ) : (
                       <div className="h-48 w-full md:h-full flex items-center justify-center bg-gradient-to-br from-purple-50 to-gray-100">
                         <div className="flex flex-col items-center justify-center text-center p-4">
-                          {renderIcon(news.id, news.title)}
-                          <span className="text-sm text-gray-500 mt-2 line-clamp-2">{news.title}</span>
+                          {renderIcon(article._id)}
+                          <span className="text-xs text-gray-500 mt-2 capitalize">{article.category}</span>
                         </div>
                       </div>
                     )}
                   </div>
                   <div className="p-6 md:w-3/4 flex flex-col justify-between">
-                    <div className="flex items-center text-sm text-gray-500 mb-2">
-                      <Calendar className="w-4 h-4 mr-2" />
-                      {news.date}
-                      <Clock className="w-4 h-4 ml-4 mr-2" />
-                      {news.read_time}
+                    <div>
+                      <div className="flex items-center flex-wrap gap-2 text-sm text-gray-500 mb-2">
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-purple-50 text-purple-700 capitalize">
+                          {article.category}
+                        </span>
+                        <span className="flex items-center">
+                          <Calendar className="w-3.5 h-3.5 mr-1" />
+                          {new Date(article.published_at).toLocaleDateString()}
+                        </span>
+                      </div>
+                      <h2 className="text-xl font-semibold text-gray-900 mb-2">
+                        {article.title}
+                      </h2>
+                      {article.summary && (
+                        <p className="text-gray-600 mb-3 line-clamp-2">{article.summary}</p>
+                      )}
                     </div>
-                    <h2 className="text-xl font-semibold text-gray-900 mb-2">
-                      {news.title}
-                    </h2>
-                    <p className="text-gray-600 mb-4">{news.description}</p>
-                    <div className="flex items-center justify-between mt-4">
+                    <div className="flex items-center justify-between mt-2">
                       <span className="text-sm text-gray-500 font-medium">
-                        {news.author ? `By ${news.author}` : 'AI News Update'}
+                        {article.source}
                       </span>
-                      <Button
-                        variant="outline"
-                        className="text-purple-600 hover:text-purple-700 border-purple-600 hover:border-purple-700 whitespace-nowrap"
-                        onClick={() => handleReadMore(news)}
+                      <a
+                        href={article.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={(e) => e.stopPropagation()}
+                        className="inline-flex items-center text-sm text-purple-600 hover:text-purple-700 font-medium"
                       >
-                        Read More
-                      </Button>
+                        Source <ExternalLink className="w-3.5 h-3.5 ml-1" />
+                      </a>
                     </div>
                   </div>
                 </div>
@@ -178,29 +174,22 @@ const AINews = () => {
           </div>
         )}
 
-        {/* Pagination - only show if we have items and more than one page */}
-        {!loading && !error && newsItems.length > 0 && totalPages > 1 && (
-          <div className="mt-8 flex justify-center space-x-2">
+        {/* Pagination */}
+        {!loading && !error && totalPages > 1 && (
+          <div className="mt-8 flex justify-center items-center space-x-2">
             <Button
               variant="outline"
-              onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+              onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
               disabled={currentPage === 1}
             >
               Previous
             </Button>
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-              <Button
-                key={page}
-                variant={currentPage === page ? "default" : "outline"}
-                className={currentPage === page ? "bg-purple-600" : ""}
-                onClick={() => setCurrentPage(page)}
-              >
-                {page}
-              </Button>
-            ))}
+            <span className="text-sm text-gray-600 px-3">
+              Page {currentPage} of {totalPages}
+            </span>
             <Button
               variant="outline"
-              onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+              onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
               disabled={currentPage === totalPages}
             >
               Next
@@ -213,20 +202,15 @@ const AINews = () => {
   );
 };
 
-// Helper function to render an appropriate AI icon for a news item
-const renderIcon = (id: string, title: string) => {
-  // Use deterministic icon selection based on the ID or title
-  const hash = id ? id.split('').reduce((a, b) => a + b.charCodeAt(0), 0) : title.length;
-  const iconIndex = hash % 4;
-  
+const renderIcon = (id: string) => {
+  const hash = id.split("").reduce((a, b) => a + b.charCodeAt(0), 0);
   const icons = [
     <Bot key="bot" className="h-16 w-16 text-purple-500" />,
     <Newspaper key="news" className="h-16 w-16 text-purple-500" />,
     <Lightbulb key="light" className="h-16 w-16 text-purple-500" />,
-    <BarChart key="chart" className="h-16 w-16 text-purple-500" />
+    <BarChart key="chart" className="h-16 w-16 text-purple-500" />,
   ];
-  
-  return icons[iconIndex];
+  return icons[hash % icons.length];
 };
 
 export default AINews;
