@@ -61,8 +61,17 @@ const SearchResults = () => {
   return (
     <div className="min-h-screen bg-white flex flex-col">
       <Helmet>
-        <title>{query ? `"${query}" — Search AI News | ThatNewAI` : "Search AI News | ThatNewAI"}</title>
-        <meta name="description" content={query ? `Search results for "${query}" on ThatNewAI — your AI news aggregator.` : "Search the latest AI news across models, tools, papers, and more."} />
+        <title>{query ? `"${query}" — Search AI News | ThatNewAI` : "Search AI News — Find Models, Tools, Papers & More | ThatNewAI"}</title>
+        <meta name="description" content={query ? `Search results for "${query}" on ThatNewAI. Find relevant AI news, research papers, tools, and announcements.` : "Search across thousands of AI news articles — models, tools, research papers, startups, and open source projects from 23+ sources."} />
+        <link rel="canonical" href={`https://thatnewai.com/search${query ? `?q=${encodeURIComponent(query)}` : ""}`} />
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content={query ? `"${query}" — Search AI News | ThatNewAI` : "Search AI News | ThatNewAI"} />
+        <meta property="og:description" content={query ? `Search results for "${query}" on ThatNewAI.` : "Search the latest AI news across models, tools, papers, and more."} />
+        <meta property="og:url" content={`https://thatnewai.com/search${query ? `?q=${encodeURIComponent(query)}` : ""}`} />
+        <meta property="og:site_name" content="ThatNewAI" />
+        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:title" content={query ? `"${query}" — Search | ThatNewAI` : "Search AI News | ThatNewAI"} />
+        <meta name="twitter:description" content={query ? `Search results for "${query}" on ThatNewAI.` : "Search the latest AI news."} />
       </Helmet>
       <Navbar />
       <main className="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-16 w-full">

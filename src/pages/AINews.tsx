@@ -52,9 +52,19 @@ const AINews = () => {
   return (
     <div className="min-h-screen bg-white flex flex-col">
       <Helmet>
-        <title>{category ? `${category.charAt(0).toUpperCase() + category.slice(1)} AI News | ThatNewAI` : "AI News | ThatNewAI"}</title>
-        <meta name="description" content={category ? `Latest ${category} news in artificial intelligence — curated by ThatNewAI.` : "Browse the latest AI news — models, tools, research papers, startups, and open source projects."} />
+        <title>{category ? `${category.charAt(0).toUpperCase() + category.slice(1)} AI News — Latest Updates | ThatNewAI` : "AI News — Latest Models, Tools, Papers & Startups | ThatNewAI"}</title>
+        <meta name="description" content={category ? `Latest ${category} news in artificial intelligence. Stay updated with breaking ${category} developments, releases, and announcements — curated by ThatNewAI.` : "Browse the latest AI news — model releases, developer tools, research papers, startup launches, and open source projects. Updated every 15 minutes from 23+ sources."} />
         <link rel="canonical" href={`https://thatnewai.com/ai-news${category ? `?category=${category}` : ""}`} />
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content={category ? `${category.charAt(0).toUpperCase() + category.slice(1)} AI News | ThatNewAI` : "AI News | ThatNewAI"} />
+        <meta property="og:description" content={category ? `Latest ${category} news in artificial intelligence — curated by ThatNewAI.` : "Browse the latest AI news — models, tools, research papers, startups, and open source projects."} />
+        <meta property="og:url" content={`https://thatnewai.com/ai-news${category ? `?category=${category}` : ""}`} />
+        <meta property="og:site_name" content="ThatNewAI" />
+        <meta property="og:image" content="https://thatnewai.com/favicon.png" />
+        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:title" content={category ? `${category.charAt(0).toUpperCase() + category.slice(1)} AI News | ThatNewAI` : "AI News | ThatNewAI"} />
+        <meta name="twitter:description" content={category ? `Latest ${category} AI news — curated by ThatNewAI.` : "Browse the latest AI news — models, tools, papers, startups, and open source."} />
+        <meta name="twitter:image" content="https://thatnewai.com/favicon.png" />
       </Helmet>
       <Navbar />
       <main className="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-16">
