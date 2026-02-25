@@ -1,5 +1,4 @@
 User-agent: *
 Allow: /
-Disallow: /search
 
 Sitemap: https://api.thatnewai.com/api/sitemap.xml
