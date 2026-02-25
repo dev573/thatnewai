@@ -1,5 +1,19 @@
 RewriteEngine On
 RewriteBase /
+
+# Force HTTPS
+RewriteCond %{HTTPS} off
+RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# Remove www (redirect www.thatnewai.com -> thatnewai.com)
+RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
+RewriteRule ^(.*)$ https://%1/$1 [L,R=301]
+
+# Redirect old/dead routes that cause soft 404s
+RewriteRule ^latest/?$ /ai-news [L,R=301]
+RewriteRule ^categories/?$ /ai-news [L,R=301]
+
+# SPA fallback — serve index.html for all non-file routes
 RewriteRule ^index\.html$ - [L]
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d

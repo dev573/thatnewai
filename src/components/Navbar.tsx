@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import { Button } from "./ui/button";
 import { NewsletterDialog } from "./NewsletterDialog";
@@ -12,20 +13,20 @@ export const Navbar = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex items-center">
-            <a href="/" className="flex-shrink-0">
+            <Link to="/" className="flex-shrink-0">
               <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
                 ThatNewAI
               </h1>
-            </a>
+            </Link>
           </div>
 
           <div className="hidden md:flex items-center space-x-8">
-            <a href="/ai-news" className="text-gray-700 hover:text-purple-600 transition-colors">
+            <Link to="/ai-news" className="text-gray-700 hover:text-purple-600 transition-colors">
               AI News
-            </a>
-            <a href="/search" className="text-gray-700 hover:text-purple-600 transition-colors">
+            </Link>
+            <Link to="/search" className="text-gray-700 hover:text-purple-600 transition-colors">
               Search
-            </a>
+            </Link>
             <Button
               className="bg-purple-600 hover:bg-purple-700 text-white"
               onClick={() => setShowNewsletter(true)}
@@ -48,18 +49,20 @@ export const Navbar = () => {
       {isOpen && (
         <div className="md:hidden">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white border-b">
-            <a
-              href="/ai-news"
+            <Link
+              to="/ai-news"
+              onClick={() => setIsOpen(false)}
               className="block px-3 py-2 rounded-md text-gray-700 hover:text-purple-600 hover:bg-purple-50 transition-colors"
             >
               AI News
-            </a>
-            <a
-              href="/search"
+            </Link>
+            <Link
+              to="/search"
+              onClick={() => setIsOpen(false)}
               className="block px-3 py-2 rounded-md text-gray-700 hover:text-purple-600 hover:bg-purple-50 transition-colors"
             >
               Search
-            </a>
+            </Link>
             <Button
               className="w-full bg-purple-600 hover:bg-purple-700 text-white mt-4"
               onClick={() => setShowNewsletter(true)}
