@@ -63,7 +63,8 @@ const SearchResults = () => {
       <Helmet>
         <title>{query ? `"${query}" — Search AI News | ThatNewAI` : "Search AI News — Find Models, Tools, Papers & More | ThatNewAI"}</title>
         <meta name="description" content={query ? `Search results for "${query}" on ThatNewAI. Find relevant AI news, research papers, tools, and announcements.` : "Search across thousands of AI news articles — models, tools, research papers, startups, and open source projects from 23+ sources."} />
-        <link rel="canonical" href={`https://thatnewai.com/search${query ? `?q=${encodeURIComponent(query)}` : ""}`} />
+        <link rel="canonical" href="https://thatnewai.com/search" />
+        <meta name="robots" content="noindex, follow" />
         <meta property="og:type" content="website" />
         <meta property="og:title" content={query ? `"${query}" — Search AI News | ThatNewAI` : "Search AI News | ThatNewAI"} />
         <meta property="og:description" content={query ? `Search results for "${query}" on ThatNewAI.` : "Search the latest AI news across models, tools, papers, and more."} />

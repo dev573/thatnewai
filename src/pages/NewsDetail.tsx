@@ -51,6 +51,10 @@ const NewsDetail = () => {
   if (error || !article) {
     return (
       <div className="min-h-screen bg-white">
+        <Helmet>
+          <meta name="robots" content="noindex, nofollow" />
+          <title>Article Not Found | ThatNewAI</title>
+        </Helmet>
         <Navbar />
         <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-16">
           <div className="text-center">

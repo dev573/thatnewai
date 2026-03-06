@@ -54,7 +54,7 @@ const AINews = () => {
       <Helmet>
         <title>{category ? `${category.charAt(0).toUpperCase() + category.slice(1)} AI News — Latest Updates | ThatNewAI` : "AI News — Latest Models, Tools, Papers & Startups | ThatNewAI"}</title>
         <meta name="description" content={category ? `Latest ${category} news in artificial intelligence. Stay updated with breaking ${category} developments, releases, and announcements — curated by ThatNewAI.` : "Browse the latest AI news — model releases, developer tools, research papers, startup launches, and open source projects. Updated every 15 minutes from 23+ sources."} />
-        <link rel="canonical" href={`https://thatnewai.com/ai-news${category ? `?category=${category}` : ""}`} />
+        <link rel="canonical" href="https://thatnewai.com/ai-news" />
         <meta property="og:type" content="website" />
         <meta property="og:title" content={category ? `${category.charAt(0).toUpperCase() + category.slice(1)} AI News | ThatNewAI` : "AI News | ThatNewAI"} />
         <meta property="og:description" content={category ? `Latest ${category} news in artificial intelligence — curated by ThatNewAI.` : "Browse the latest AI news — models, tools, research papers, startups, and open source projects."} />
